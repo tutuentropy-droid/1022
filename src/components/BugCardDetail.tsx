@@ -42,13 +42,13 @@ export function BugCardDetail({
       <div className={cn("pt-4", className)}>
         <div className="border-t border-museum-gold/20 pt-4 space-y-5">
           {matchReason && (
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-museum-wall/30 border border-museum-gold/10">
+            <div className="flex items-start gap-3 p-4 rounded-xl bg-museum-wall/5 border border-museum-gold/20">
               <AlertTriangle className="w-5 h-5 text-museum-gold flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-museum-gold/90 mb-1">
+                <p className="text-sm font-medium text-museum-gold mb-1">
                   匹配依据
                 </p>
-                <p className="text-sm text-museum-paper/70 font-body leading-relaxed">
+                <p className="text-sm text-museum-ink/75 font-body leading-relaxed">
                   {matchReason}
                 </p>
                 {matchedKeywords.length > 0 && (
@@ -56,7 +56,7 @@ export function BugCardDetail({
                     {matchedKeywords.map((keyword, idx) => (
                       <span
                         key={idx}
-                        className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-museum-gold/15 text-museum-gold/90 border border-museum-gold/20"
+                        className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-museum-gold/15 text-museum-gold border border-museum-gold/30"
                       >
                         {keyword}
                       </span>
@@ -72,7 +72,7 @@ export function BugCardDetail({
             title="分类与严重度"
           >
             <div className="flex flex-wrap gap-2">
-              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-museum-wallLight/40 text-museum-paper/70 border border-museum-paper/10">
+              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-museum-wall/10 text-museum-ink/70 border border-museum-ink/10">
                 {categoryLabels[bug.category]}
               </span>
               <span
@@ -83,7 +83,7 @@ export function BugCardDetail({
               >
                 {severityLabels[bug.severity]}影响
               </span>
-              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-mono text-museum-inkLight/60 bg-museum-paper/10">
+              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-mono text-museum-inkLight bg-museum-ink/5">
                 藏品编号 {bug.museumNumber}
               </span>
             </div>
@@ -91,7 +91,7 @@ export function BugCardDetail({
 
           {bug.alias && bug.alias.length > 0 && (
             <DetailSection icon={<Quote className="w-4 h-4" />} title="别名">
-              <p className="text-sm text-museum-paper/70 font-body italic">
+              <p className="text-sm text-museum-ink/70 font-body italic">
                 {bug.alias.join("、")}
               </p>
             </DetailSection>
@@ -102,10 +102,10 @@ export function BugCardDetail({
               {bug.examples.map((example, idx) => (
                 <li key={idx} className="flex items-start gap-2">
                   <span className="text-museum-gold/60 mt-1">•</span>
-                  <p className="text-sm text-museum-paper/75 font-body leading-relaxed">
-                    <span className="text-museum-paper/40">「</span>
+                  <p className="text-sm text-museum-ink/75 font-body leading-relaxed">
+                    <span className="text-museum-ink/30">「</span>
                     {example}
-                    <span className="text-museum-paper/40">」</span>
+                    <span className="text-museum-ink/30">」</span>
                   </p>
                 </li>
               ))}
@@ -134,10 +134,10 @@ export function BugCardDetail({
             <ul className="space-y-2.5">
               {bug.coping.map((strategy, idx) => (
                 <li key={idx} className="flex items-start gap-2.5">
-                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-museum-gold/20 flex items-center justify-center text-museum-gold text-xs font-bold mt-0.5">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-museum-gold/20 flex items-center justify-center text-museum-goldDark text-xs font-bold mt-0.5">
                     {idx + 1}
                   </span>
-                  <p className="text-sm text-museum-paper/80 font-body leading-relaxed">
+                  <p className="text-sm text-museum-ink/80 font-body leading-relaxed">
                     {strategy}
                   </p>
                 </li>
@@ -146,8 +146,11 @@ export function BugCardDetail({
           </DetailSection>
 
           <button
-            onClick={onToggle}
-            className="w-full pt-2 flex items-center justify-center gap-1.5 text-museum-gold/50 hover:text-museum-gold transition-colors duration-200 text-sm font-body"
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggle();
+            }}
+            className="w-full pt-2 flex items-center justify-center gap-1.5 text-museum-gold/60 hover:text-museum-gold transition-colors duration-200 text-sm font-body"
           >
             <ChevronUp className="w-4 h-4" />
             收起详情
@@ -168,11 +171,11 @@ function DetailSection({ icon, title, children }: DetailSectionProps) {
   return (
     <div>
       <div className="flex items-center gap-2 mb-2.5">
-        <span className="text-museum-gold/80">{icon}</span>
-        <h4 className="text-sm font-semibold text-museum-paper/90 font-display tracking-wide">
+        <span className="text-museum-gold">{icon}</span>
+        <h4 className="text-sm font-semibold text-museum-ink font-display tracking-wide">
           {title}
         </h4>
-        <div className="flex-1 h-px bg-gradient-to-r from-museum-gold/20 to-transparent" />
+        <div className="flex-1 h-px bg-gradient-to-r from-museum-gold/30 to-transparent" />
       </div>
       {children}
     </div>

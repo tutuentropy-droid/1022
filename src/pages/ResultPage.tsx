@@ -7,6 +7,7 @@ import {
   Trophy,
   AlertTriangle,
   Info,
+  ClipboardPaste,
 } from "lucide-react";
 import { MuseumHeader } from "../components/MuseumHeader";
 import { BugCard } from "../components/BugCard";
@@ -22,6 +23,7 @@ export default function ResultPage() {
     expandedBugId,
     toggleBugExpansion,
     clearResults,
+    hasScanned,
   } = useAppStore();
 
   const handleBack = () => {
@@ -34,6 +36,7 @@ export default function ResultPage() {
   };
 
   const hasResults = matchResults.length > 0;
+  const isEmptyAndNotScanned = !isLoading && !hasScanned;
   const highSeverityCount = matchResults.filter(
     (r) => r.bug.severity === "high"
   ).length;
@@ -96,6 +99,8 @@ export default function ResultPage() {
 
           {isLoading ? (
             <LoadingState />
+          ) : isEmptyAndNotScanned ? (
+            <NotScannedState onBack={handleBack} />
           ) : hasResults ? (
             <>
               <ResultSummary
@@ -197,6 +202,38 @@ function ResultSummary({
           </span>
         </div>
       </div>
+    </div>
+  );
+}
+
+function NotScannedState({ onBack }: { onBack: () => void }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-20 animate-fade-in opacity-0">
+      <div className="relative w-20 h-20 mb-6">
+        <div className="w-full h-full rounded-2xl bg-museum-wallLight/50 border border-museum-gold/20 flex items-center justify-center">
+          <ClipboardPaste className="w-10 h-10 text-museum-gold/50" />
+        </div>
+        <span className="corner-decoration corner-decoration-tl" />
+        <span className="corner-decoration corner-decoration-br" />
+      </div>
+
+      <h3 className="font-display text-2xl text-museum-paper mb-2">
+        还没有扫描记录
+      </h3>
+      <p className="font-body text-museum-paper/50 max-w-md text-center mb-8 leading-relaxed">
+        请先回到首页，输入你此刻的想法，让我们帮你扫描出潜藏的认知 Bug。
+      </p>
+
+      <button
+        onClick={onBack}
+        className={cn(
+          "inline-flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium text-sm transition-all duration-300",
+          "bg-gold-gradient text-museum-ink shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
+        )}
+      >
+        <ArrowLeft className="w-4 h-4" />
+        去首页输入想法
+      </button>
     </div>
   );
 }
