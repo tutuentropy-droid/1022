@@ -48,7 +48,7 @@ export class KeywordBugMatcher implements BugMatcher {
     return text
       .toLowerCase()
       .trim()
-      .replace(/[，。！？、；：""''（）《》【】…—\s,.!?;:'"()\[\]<>_-]/g, "");
+      .replace(/[，。！？、；：""''（）《》【】…—\s,.!?;:'"()[\]<>_-]/g, "");
   }
 
   private calculateScore(
@@ -131,7 +131,7 @@ export class AIBugMatcher implements BugMatcher {
             id: b.id,
             name: b.name,
             description: b.description,
-            examples: b.examples,
+            commonPhrases: b.commonPhrases,
           })),
         }),
       });

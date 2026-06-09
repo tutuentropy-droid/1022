@@ -6,19 +6,43 @@ export type BugCategory =
 
 export type BugSeverity = "low" | "medium" | "high";
 
+export interface TriggerCondition {
+  scenario: string;
+  description?: string;
+}
+
+export interface ReasoningStep {
+  step: number;
+  thought: string;
+  cognitiveLeap: string;
+}
+
+export interface RealCase {
+  title: string;
+  context: string;
+  bugManifestation: string;
+  consequence?: string;
+}
+
 export interface CognitiveBug {
   id: string;
   name: string;
+  tagline?: string;
+  scientificName?: string;
   alias?: string[];
   category: BugCategory;
   severity: BugSeverity;
   description: string;
-  examples: string[];
+  commonPhrases: string[];
+  triggerConditions: TriggerCondition[];
+  reasoningPath: ReasoningStep[];
+  realCases: RealCase[];
   coping: string[];
   keywords: string[];
-  triggers?: string[];
   museumNumber: string;
   icon?: string;
+  version?: string;
+  tags?: string[];
 }
 
 export interface BugMatchResult {

@@ -115,6 +115,11 @@ export function BugCard({
                   <h3 className="font-display text-xl font-bold text-museum-ink tracking-wide">
                     {bug.name}
                   </h3>
+                  {bug.tagline && (
+                    <p className="text-xs text-museum-ink/60 font-body italic mt-0.5">
+                      「{bug.tagline}」
+                    </p>
+                  )}
                   <p className="text-xs font-mono text-museum-inkLight/50 mt-0.5">
                     {bug.museumNumber}
                   </p>
