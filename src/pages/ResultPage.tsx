@@ -1,0 +1,235 @@
+import { useNavigate } from "react-router-dom";
+import {
+  ArrowLeft,
+  RefreshCw,
+  SearchX,
+  Sparkles,
+  Trophy,
+  AlertTriangle,
+  Info,
+} from "lucide-react";
+import { MuseumHeader } from "../components/MuseumHeader";
+import { BugCard } from "../components/BugCard";
+import { useAppStore } from "../store/useAppStore";
+import { cn } from "../lib/utils";
+
+export default function ResultPage() {
+  const navigate = useNavigate();
+  const {
+    userInput,
+    matchResults,
+    isLoading,
+    expandedBugId,
+    toggleBugExpansion,
+    clearResults,
+  } = useAppStore();
+
+  const handleBack = () => {
+    navigate("/");
+  };
+
+  const handleReset = () => {
+    clearResults();
+    navigate("/");
+  };
+
+  const hasResults = matchResults.length > 0;
+  const highSeverityCount = matchResults.filter(
+    (r) => r.bug.severity === "high"
+  ).length;
+  const avgScore =
+    matchResults.length > 0
+      ? matchResults.reduce((sum, r) => sum + r.matchScore, 0) /
+        matchResults.length
+      : 0;
+
+  return (
+    <div className="min-h-screen bg-museum-wall flex flex-col">
+      <MuseumHeader />
+
+      <main className="flex-1">
+        <div className="container mx-auto px-4 pb-16">
+          <div className="flex items-center justify-between mb-8 animate-fade-in opacity-0">
+            <button
+              onClick={handleBack}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-museum-paper/70 hover:text-museum-paper hover:bg-museum-wallLight/50 transition-all duration-300 font-body text-sm"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              返回重新输入
+            </button>
+
+            <button
+              onClick={handleReset}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-museum-gold/30 text-museum-gold hover:bg-museum-gold/10 transition-all duration-300 font-body text-sm"
+            >
+              <RefreshCw className="w-4 h-4" />
+              清空重来
+            </button>
+          </div>
+
+          {userInput && (
+            <div className="mb-10 animate-fade-up opacity-0 stagger-delay-1">
+              <div className="relative max-w-3xl mx-auto">
+                <div className="p-6 rounded-2xl bg-museum-wallLight/30 border border-museum-gold/15">
+                  <span className="corner-decoration corner-decoration-tl" />
+                  <span className="corner-decoration corner-decoration-tr" />
+                  <span className="corner-decoration corner-decoration-bl" />
+                  <span className="corner-decoration corner-decoration-br" />
+
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 rounded-full bg-museum-gold/15 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Info className="w-4 h-4 text-museum-gold" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-museum-gold/70 font-body mb-1 tracking-wide">
+                        你输入的想法
+                      </p>
+                      <p className="font-body text-lg text-museum-paper leading-relaxed">
+                        {userInput}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {isLoading ? (
+            <LoadingState />
+          ) : hasResults ? (
+            <>
+              <ResultSummary
+                count={matchResults.length}
+                highSeverityCount={highSeverityCount}
+                avgScore={avgScore}
+              />
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-5xl mx-auto">
+                {matchResults.map((result, index) => (
+                  <BugCard
+                    key={result.bug.id}
+                    matchResult={result}
+                    index={index}
+                    isExpanded={expandedBugId === result.bug.id}
+                    onToggle={() => toggleBugExpansion(result.bug.id)}
+                  />
+                ))}
+              </div>
+
+              <div className="mt-16 text-center animate-fade-in opacity-0">
+                <div className="museum-divider max-w-md mx-auto">
+                  <span className="text-museum-gold/60 text-xs">❖</span>
+                </div>
+                <p className="text-sm text-museum-paper/40 font-body max-w-lg mx-auto leading-relaxed mt-6">
+                  认知偏差是人类大脑的正常运作方式，它们不是缺陷，而是进化带来的快捷方式。
+                  觉察是改变的第一步，看见它们，就已经迈出了重要的一步。
+                </p>
+              </div>
+            </>
+          ) : (
+            <EmptyState onBack={handleBack} />
+          )}
+        </div>
+      </main>
+    </div>
+  );
+}
+
+function LoadingState() {
+  return (
+    <div className="flex flex-col items-center justify-center py-20 animate-fade-in opacity-0">
+      <div className="relative w-16 h-16 mb-6">
+        <div className="absolute inset-0 rounded-full border-2 border-museum-gold/20" />
+        <div className="absolute inset-0 rounded-full border-2 border-museum-gold border-t-transparent animate-spin" />
+        <div className="absolute inset-3 rounded-full bg-museum-gold/10 flex items-center justify-center">
+          <Sparkles className="w-5 h-5 text-museum-gold animate-pulse" />
+        </div>
+      </div>
+      <p className="font-display text-xl text-museum-paper mb-2">
+        正在扫描你的想法...
+      </p>
+      <p className="font-body text-sm text-museum-paper/50">
+        正在对比认知 Bug 数据库
+      </p>
+    </div>
+  );
+}
+
+function ResultSummary({
+  count,
+  highSeverityCount,
+  avgScore,
+}: {
+  count: number;
+  highSeverityCount: number;
+  avgScore: number;
+}) {
+  return (
+    <div className="text-center mb-10 animate-fade-up opacity-0 stagger-delay-1">
+      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-museum-gold/10 border border-museum-gold/20 mb-4">
+        <Trophy className="w-4 h-4 text-museum-gold" />
+        <span className="text-sm text-museum-gold/90 font-body">
+          扫描报告已生成
+        </span>
+      </div>
+
+      <h2 className="font-display text-3xl md:text-4xl font-bold text-museum-paper mb-3">
+        检测到{" "}
+        <span className="text-museum-gold">{count}</span>{" "}
+        个潜在认知 Bug
+      </h2>
+
+      <p className="font-body text-museum-paper/60 mb-6">
+        以下是与你的想法匹配的认知偏差，点击卡片查看详细解读
+      </p>
+
+      <div className="flex flex-wrap justify-center gap-4">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-museum-wallLight/40 border border-museum-paper/10">
+          <AlertTriangle className="w-4 h-4 text-museum-warningLight" />
+          <span className="text-sm text-museum-paper/70 font-body">
+            高度影响：<strong className="text-museum-warningLight">{highSeverityCount}</strong>
+          </span>
+        </div>
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-museum-wallLight/40 border border-museum-paper/10">
+          <Sparkles className="w-4 h-4 text-museum-gold" />
+          <span className="text-sm text-museum-paper/70 font-body">
+            平均匹配度：<strong className="text-museum-gold">{Math.round(avgScore * 100)}%</strong>
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EmptyState({ onBack }: { onBack: () => void }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-20 animate-fade-in opacity-0">
+      <div className="relative w-20 h-20 mb-6">
+        <div className="w-full h-full rounded-2xl bg-museum-wallLight/50 border border-museum-gold/20 flex items-center justify-center">
+          <SearchX className="w-10 h-10 text-museum-gold/50" />
+        </div>
+        <span className="corner-decoration corner-decoration-tl" />
+        <span className="corner-decoration corner-decoration-br" />
+      </div>
+
+      <h3 className="font-display text-2xl text-museum-paper mb-2">
+        未检测到明显的认知 Bug
+      </h3>
+      <p className="font-body text-museum-paper/50 max-w-md text-center mb-8 leading-relaxed">
+        你的想法看起来很健康！不过认知偏差往往很隐蔽，
+        可以试着描述得更详细一些，或者换一种表达方式再试试。
+      </p>
+
+      <button
+        onClick={onBack}
+        className={cn(
+          "inline-flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium text-sm transition-all duration-300",
+          "bg-gold-gradient text-museum-ink shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
+        )}
+      >
+        <ArrowLeft className="w-4 h-4" />
+        重新输入想法
+      </button>
+    </div>
+  );
+}
