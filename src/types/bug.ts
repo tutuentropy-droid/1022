@@ -6,6 +6,8 @@ export type BugCategory =
 
 export type BugSeverity = "low" | "medium" | "high";
 
+export type BugRank = "S" | "A" | "B" | "C" | "D";
+
 export interface TriggerCondition {
   scenario: string;
   description?: string;
@@ -32,6 +34,8 @@ export interface CognitiveBug {
   alias?: string[];
   category: BugCategory;
   severity: BugSeverity;
+  rank: BugRank;
+  recurrenceRate: number;
   description: string;
   commonPhrases: string[];
   triggerConditions: TriggerCondition[];
@@ -67,4 +71,20 @@ export const severityLabels: Record<BugSeverity, string> = {
   low: "轻微",
   medium: "中等",
   high: "严重",
+};
+
+export const rankLabels: Record<BugRank, string> = {
+  S: "S级 · 标本级",
+  A: "A级 · 珍贵级",
+  B: "B级 · 馆藏级",
+  C: "C级 · 普通级",
+  D: "D级 · 观测级",
+};
+
+export const rankColors: Record<BugRank, string> = {
+  S: "#ff6b6b",
+  A: "#ffa94d",
+  B: "#c9a962",
+  C: "#69db7c",
+  D: "#74c0fc",
 };

@@ -148,4 +148,77 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  .spotlight-card {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .spotlight-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(201, 169, 98, 0.15),
+      transparent 40%
+    );
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+  }
+
+  .spotlight-card:hover::before {
+    opacity: 1;
+  }
+
+  .scanline {
+    background: linear-gradient(
+      transparent 50%,
+      rgba(0, 0, 0, 0.03) 50%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+  }
+
+  .glow-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes glow-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
+    }
+    50% {
+      box-shadow: 0 0 10px currentColor, 0 0 20px currentColor,
+        0 0 30px currentColor;
+    }
+  }
+
+  .float-animation {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+
+  .counter-animation {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .gauge-fill {
+    transition: stroke-dashoffset 1s ease-out;
+  }
+
+  .bar-fill {
+    transition: width 1s ease-out;
+  }
 }

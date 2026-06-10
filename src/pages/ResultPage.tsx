@@ -4,13 +4,12 @@ import {
   RefreshCw,
   SearchX,
   Sparkles,
-  Trophy,
   AlertTriangle,
   Info,
   ClipboardPaste,
 } from "lucide-react";
 import { MuseumHeader } from "../components/MuseumHeader";
-import { BugCard } from "../components/BugCard";
+import { ExhibitHall } from "../components/ExhibitHall";
 import { useAppStore } from "../store/useAppStore";
 import { cn } from "../lib/utils";
 
@@ -37,14 +36,6 @@ export default function ResultPage() {
 
   const hasResults = matchResults.length > 0;
   const isEmptyAndNotScanned = !isLoading && !hasScanned;
-  const highSeverityCount = matchResults.filter(
-    (r) => r.bug.severity === "high"
-  ).length;
-  const avgScore =
-    matchResults.length > 0
-      ? matchResults.reduce((sum, r) => sum + r.matchScore, 0) /
-        matchResults.length
-      : 0;
 
   return (
     <div className="min-h-screen bg-museum-wall flex flex-col">
@@ -103,23 +94,11 @@ export default function ResultPage() {
             <NotScannedState onBack={handleBack} />
           ) : hasResults ? (
             <>
-              <ResultSummary
-                count={matchResults.length}
-                highSeverityCount={highSeverityCount}
-                avgScore={avgScore}
+              <ExhibitHall
+                results={matchResults}
+                expandedBugId={expandedBugId}
+                toggleBugExpansion={toggleBugExpansion}
               />
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-5xl mx-auto">
-                {matchResults.map((result, index) => (
-                  <BugCard
-                    key={result.bug.id}
-                    matchResult={result}
-                    index={index}
-                    isExpanded={expandedBugId === result.bug.id}
-                    onToggle={() => toggleBugExpansion(result.bug.id)}
-                  />
-                ))}
-              </div>
 
               <div className="mt-16 text-center animate-fade-in opacity-0">
                 <div className="museum-divider max-w-md mx-auto">
@@ -156,52 +135,6 @@ function LoadingState() {
       <p className="font-body text-sm text-museum-paper/50">
         正在对比认知 Bug 数据库
       </p>
-    </div>
-  );
-}
-
-function ResultSummary({
-  count,
-  highSeverityCount,
-  avgScore,
-}: {
-  count: number;
-  highSeverityCount: number;
-  avgScore: number;
-}) {
-  return (
-    <div className="text-center mb-10 animate-fade-up opacity-0 stagger-delay-1">
-      <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-museum-gold/10 border border-museum-gold/20 mb-4">
-        <Trophy className="w-4 h-4 text-museum-gold" />
-        <span className="text-sm text-museum-gold/90 font-body">
-          扫描报告已生成
-        </span>
-      </div>
-
-      <h2 className="font-display text-3xl md:text-4xl font-bold text-museum-paper mb-3">
-        检测到{" "}
-        <span className="text-museum-gold">{count}</span>{" "}
-        个潜在认知 Bug
-      </h2>
-
-      <p className="font-body text-museum-paper/60 mb-6">
-        以下是与你的想法匹配的认知偏差，点击卡片查看详细解读
-      </p>
-
-      <div className="flex flex-wrap justify-center gap-4">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-museum-wallLight/40 border border-museum-paper/10">
-          <AlertTriangle className="w-4 h-4 text-museum-warningLight" />
-          <span className="text-sm text-museum-paper/70 font-body">
-            高度影响：<strong className="text-museum-warningLight">{highSeverityCount}</strong>
-          </span>
-        </div>
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-museum-wallLight/40 border border-museum-paper/10">
-          <Sparkles className="w-4 h-4 text-museum-gold" />
-          <span className="text-sm text-museum-paper/70 font-body">
-            平均匹配度：<strong className="text-museum-gold">{Math.round(avgScore * 100)}%</strong>
-          </span>
-        </div>
-      </div>
     </div>
   );
 }

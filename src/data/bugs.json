@@ -7,6 +7,8 @@
     "alias": ["向上攀比", "朋友圈焦虑", "同龄人淘汰综合征"],
     "category": "social",
     "severity": "medium",
+    "rank": "A",
+    "recurrenceRate": 85,
     "description": "习惯性将自己的日常与他人精心筛选展示的高光时刻进行不利比较，用别人的滤镜版人生来贬低自己的真实存在。",
     "commonPhrases": [
       "同龄人都升职了，我还在原地踏步，我真是太失败了",
@@ -93,6 +95,8 @@
     "alias": ["末日编剧模式", "最坏结果上瘾", "万一星人"],
     "category": "thinking",
     "severity": "high",
+    "rank": "S",
+    "recurrenceRate": 75,
     "description": "将普通的负面事件一键放大为灾难性结局，自动脑补最糟糕的剧本并坚信其必然发生，提前体验了一遍世界末日。",
     "commonPhrases": [
       "完了完了，这次面试搞砸了，我这辈子都找不到工作了",
@@ -178,6 +182,8 @@
     "alias": ["一件事定终身", "自我贴签", "行为即人格"],
     "category": "emotional",
     "severity": "high",
+    "rank": "S",
+    "recurrenceRate": 70,
     "description": "基于单一行为或事件，给自己或他人贴上整体性的、极端的负面标签，把一个复杂多面的人压缩成一个词。",
     "commonPhrases": [
       "我犯了一个错误，我真是个蠢货",
@@ -263,6 +269,8 @@
     "alias": ["二分法思维", "两极化思维", "要么满分要么零分"],
     "category": "thinking",
     "severity": "medium",
+    "rank": "A",
+    "recurrenceRate": 65,
     "description": "用极端的、非此即彼的方式看待一切事物，拒绝承认中间地带和灰色区域的存在——不是完美就是彻底失败，不是天才就是废物，不是爱就是恨。",
     "commonPhrases": [
       "这次考试没拿满分就是彻底失败",
@@ -348,6 +356,8 @@
     "alias": ["以偏概全", "一概而论", "一次经历=普遍规律"],
     "category": "thinking",
     "severity": "medium",
+    "rank": "B",
+    "recurrenceRate": 80,
     "description": "基于一次或少数几次事件，得出广泛的、普遍性的结论——被一个人拒绝就觉得所有人都不喜欢自己，一件事没做好就觉得什么事都做不好。",
     "commonPhrases": [
       "被她拒绝了，所有女生都不会喜欢我这种人的",
@@ -433,6 +443,8 @@
     "alias": ["主观臆断", "猜测他人想法", "我知道你在想什么"],
     "category": "social",
     "severity": "medium",
+    "rank": "B",
+    "recurrenceRate": 90,
     "description": "在没有充分证据、没有直接询问的情况下，自以为知道他人在想什么、对你有什么看法——通常还都是负面的。",
     "commonPhrases": [
       "他没回我消息一定是讨厌我",
@@ -519,6 +531,8 @@
     "alias": ["先知错误", "消极预判", "未发生先定罪"],
     "category": "thinking",
     "severity": "medium",
+    "rank": "A",
+    "recurrenceRate": 60,
     "description": "预测事情会变坏，并对自己的预测深信不疑，仿佛已经是既定事实——更可怕的是，因为你相信了，你的行为真的会让它发生。",
     "commonPhrases": [
       "我去面试肯定会紧张到说不出话",
@@ -604,6 +618,8 @@
     "alias": ["揽责上身", "自我归因偏差", "什么都怪我"],
     "category": "thinking",
     "severity": "high",
+    "rank": "S",
+    "recurrenceRate": 55,
     "description": "将自己无法控制的外部事件的责任全部归咎于自己，认为自己是一切负面事件的原因——连天气不好都能联想到是不是自己今天做错了什么。",
     "commonPhrases": [
       "团队项目失败了，全都是我的错",
@@ -689,6 +705,8 @@
     "alias": ["必须思维", "强迫性规则", "人生KPI强迫症"],
     "category": "emotional",
     "severity": "medium",
+    "rank": "A",
+    "recurrenceRate": 75,
     "description": "用'应该''必须''应当'等严格的规则来要求自己和他人，当这些规则未被满足时产生强烈的愤怒、内疚、挫败感——这些规则往往来自他人和社会，而不是你自己的选择。",
     "commonPhrases": [
       "我应该总是保持积极乐观，不能有负能量",
@@ -774,6 +792,8 @@
     "alias": ["感受即真理", "我觉得所以是"],
     "category": "emotional",
     "severity": "high",
+    "rank": "S",
+    "recurrenceRate": 70,
     "description": "将自己的情绪感受等同于客观事实，因为感受到某种情绪就认为事情一定如此——我焦虑就是有危险，我觉得自己失败所以我就是失败，我愧疚就是我做错了。",
     "commonPhrases": [
       "我感到焦虑，说明一定有什么坏事要发生",
@@ -859,6 +879,8 @@
     "alias": ["低估积极事件", "打折扣思维", "好事不算数"],
     "category": "thinking",
     "severity": "medium",
+    "rank": "B",
+    "recurrenceRate": 85,
     "description": "拒绝承认或贬低正面的经历、成就和品质，将积极的事情解释为'不算数'——成功只是运气好，赞美只是客套话，好事只是巧合。",
     "commonPhrases": [
       "这次成功只是运气好，不算什么",
@@ -944,6 +966,8 @@
     "alias": ["选择性注意", "隧道视野", "负面信息显微镜"],
     "category": "thinking",
     "severity": "medium",
+    "rank": "B",
+    "recurrenceRate": 90,
     "description": "只关注事物的负面细节，而忽略或过滤掉所有正面的部分，用一小片负面信息来看待整体——就像一滴墨水染黑了一整杯水。",
     "commonPhrases": [
       "演讲收到了很多好评，但我只记住了那个人说的'还可以改进'",
