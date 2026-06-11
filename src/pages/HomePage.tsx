@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Search, BookOpen, Brain, Shield, Users, Map, Sparkles, ArrowRight } from "lucide-react";
+import { Search, BookOpen, Brain, Shield, Users, Map, Sparkles, ArrowRight, Network } from "lucide-react";
 import { MuseumHeader } from "../components/MuseumHeader";
 import { ThoughtInput } from "../components/ThoughtInput";
 import { PersonalitySelector } from "../components/PersonalitySelector";
@@ -150,54 +150,89 @@ export default function HomePage() {
             )}
           </div>
 
-          <div className="mt-20 max-w-4xl mx-auto w-full animate-fade-up opacity-0" style={{ animationDelay: '0.5s' }}>
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto w-full">
             <div
-              className="relative p-8 rounded-3xl border-2 border-museum-gold/30 overflow-hidden"
+              className="relative p-6 rounded-2xl border-2 border-museum-gold/30 overflow-hidden cursor-pointer group hover:scale-[1.02] transition-all duration-300 animate-fade-up opacity-0"
               style={{
                 background: 'linear-gradient(135deg, rgba(201, 169, 98, 0.15) 0%, rgba(26, 58, 58, 0.8) 50%, rgba(201, 169, 98, 0.1) 100%)',
+                animationDelay: '0.5s',
               }}
+              onClick={() => navigate("/relationship-map")}
             >
-              <div className="absolute top-4 right-4">
-                <Sparkles className="w-6 h-6 text-museum-gold/40 sparkle" />
-              </div>
-              <div className="absolute bottom-4 left-4">
-                <Sparkles className="w-4 h-4 text-museum-gold/30 sparkle" style={{ animationDelay: '0.5s' }} />
+              <div className="absolute top-3 right-3">
+                <Sparkles className="w-5 h-5 text-museum-gold/40 sparkle" />
               </div>
 
-              <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-museum-gold/30 to-museum-gold/10 border-2 border-museum-gold/50 flex items-center justify-center flex-shrink-0">
-                  <Map className="w-7 h-7 text-museum-gold" />
+              <div className="flex items-start gap-3">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-museum-gold/30 to-museum-gold/10 border border-museum-gold/50 flex items-center justify-center flex-shrink-0">
+                  <Map className="w-6 h-6 text-museum-gold" />
                 </div>
 
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="flex items-center gap-2 mb-1">
                     <span className="px-2 py-0.5 rounded-full bg-museum-gold/20 text-museum-gold text-[10px] font-bold border border-museum-gold/30">
-                      NEW · 长期成长
+                      长期成长
                     </span>
                   </div>
-                  <h3 className="font-display text-xl md:text-2xl font-bold text-museum-paper mb-2">
+                  <h3 className="font-display text-lg font-bold text-museum-paper mb-2">
                     关系人格地图
                   </h3>
-                  <p className="text-sm text-museum-paper/60 font-body leading-relaxed mb-4 max-w-xl">
-                    记录你在不同关系中的互动模式——亲密关系、工作关系、家庭关系。
-                    系统会识别你的高频触发 Bug（讨好、过度解释、回避冲突...），
-                    输出关系成长趋势，让你看见自己的重复模式。
+                  <p className="text-xs text-museum-paper/60 font-body leading-relaxed mb-3">
+                    记录你在不同关系中的互动模式，识别高频触发 Bug，
+                    输出关系成长趋势。
                   </p>
 
-                  <button
-                    onClick={() => navigate("/relationship-map")}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gold-gradient text-museum-ink font-medium text-sm shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
-                  >
-                    探索我的关系地图
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
+                  <div className="inline-flex items-center gap-1 text-museum-gold text-sm font-medium">
+                    进入探索
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </div>
               </div>
 
               <span className="corner-decoration corner-decoration-tl" />
-              <span className="corner-decoration corner-decoration-tr" />
-              <span className="corner-decoration corner-decoration-bl" />
               <span className="corner-decoration corner-decoration-br" />
+            </div>
+
+            <div
+              className="relative p-6 rounded-2xl border-2 border-purple-400/30 overflow-hidden cursor-pointer group hover:scale-[1.02] transition-all duration-300 animate-fade-up opacity-0"
+              style={{
+                background: 'linear-gradient(135deg, rgba(167, 139, 250, 0.15) 0%, rgba(26, 58, 58, 0.8) 50%, rgba(236, 72, 153, 0.1) 100%)',
+                animationDelay: '0.6s',
+              }}
+              onClick={() => navigate("/group-dynamics")}
+            >
+              <div className="absolute top-3 right-3">
+                <Sparkles className="w-5 h-5 text-purple-300/40 sparkle" />
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/30 to-pink-500/10 border border-purple-400/50 flex items-center justify-center flex-shrink-0">
+                  <Network className="w-6 h-6 text-purple-300" />
+                </div>
+
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-[10px] font-bold border border-purple-400/30">
+                      NEW · 群体视角
+                    </span>
+                  </div>
+                  <h3 className="font-display text-lg font-bold text-museum-paper mb-2">
+                    群体动力系统
+                  </h3>
+                  <p className="text-xs text-museum-paper/60 font-body leading-relaxed mb-3">
+                    分析群聊、会议、团队冲突，识别联盟、边缘角色、
+                    情绪传染、冲突放大者与缓冲者。
+                  </p>
+
+                  <div className="inline-flex items-center gap-1 text-purple-300 text-sm font-medium">
+                    进入探索
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </div>
+
+              <span className="corner-decoration corner-decoration-tl" style={{ borderColor: 'rgba(167, 139, 250, 0.3)' }} />
+              <span className="corner-decoration corner-decoration-br" style={{ borderColor: 'rgba(167, 139, 250, 0.3)' }} />
             </div>
           </div>
         </section>

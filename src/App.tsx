@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "@/pages/HomePage";
 import ResultPage from "@/pages/ResultPage";
 import RelationshipMapPage from "@/pages/RelationshipMapPage";
+import GroupDynamicsPage from "@/pages/GroupDynamicsPage";
+import GroupDetailPage from "@/pages/GroupDetailPage";
 
 export default function App() {
   return (
@@ -10,6 +12,8 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/result" element={<ResultPage />} />
         <Route path="/relationship-map" element={<RelationshipMapPage />} />
+        <Route path="/group-dynamics" element={<GroupDynamicsPage />} />
+        <Route path="/group-dynamics/:groupId" element={<GroupDetailPage />} />
         <Route
           path="*"
           element={
