@@ -6,10 +6,16 @@ import type {
   CognitiveBug,
   PropagationPath,
 } from "../types/bug";
+import type { PersonalityProfile } from "../types/personality";
+import {
+  generatePersonalityAugmentedExplanation,
+  mergePersonalityIntoExplanation,
+} from "./personalityService";
 
 export function buildBugChain(
   matchResults: BugMatchResult[],
-  allBugs: CognitiveBug[]
+  allBugs: CognitiveBug[],
+  personalityProfile?: PersonalityProfile
 ): BugChain | null {
   if (matchResults.length === 0) return null;
 
@@ -107,13 +113,23 @@ export function buildBugChain(
   });
 
   const dominantPath = findDominantPath(triggerBugId, nodes, edges, bugMap);
-  const explanation = generateExplanation(
+  let explanation = generateExplanation(
     nodes,
     edges,
     triggerBugId,
     dominantPath,
     bugMap
   );
+
+  let personalityAugmented = undefined;
+  if (personalityProfile) {
+    personalityAugmented = generatePersonalityAugmentedExplanation(
+      { nodes, edges, triggerBugId, chainLength: 0, potentialCount: 0, explanation, dominantPath, spiralSeverity: "mild" },
+      personalityProfile,
+      allBugs
+    );
+    explanation = mergePersonalityIntoExplanation(explanation, personalityAugmented);
+  }
 
   const matchedCount = nodes.filter((n) => n.isMatched).length;
   const potentialCount = nodes.filter((n) => !n.isMatched).length;
@@ -127,6 +143,8 @@ export function buildBugChain(
     explanation,
     dominantPath,
     spiralSeverity: calculateSpiralSeverity(nodes, edges),
+    personalityProfile,
+    personalityAugmented,
   };
 }
 

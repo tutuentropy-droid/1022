@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import { Search, BookOpen, Brain, Shield } from "lucide-react";
+import { Search, BookOpen, Brain, Shield, User } from "lucide-react";
 import { MuseumHeader } from "../components/MuseumHeader";
 import { ThoughtInput } from "../components/ThoughtInput";
+import { PersonalitySelector } from "../components/PersonalitySelector";
 import { useAppStore } from "../store/useAppStore";
 import { cn } from "../lib/utils";
 
@@ -62,6 +63,7 @@ export default function HomePage() {
           </div>
 
           <div className="w-full animate-fade-up opacity-0 stagger-delay-1">
+            <PersonalitySelector />
             <ThoughtInput
               value={userInput}
               onChange={setUserInput}

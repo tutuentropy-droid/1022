@@ -1,3 +1,5 @@
+import type { PersonalityProfile, PersonalityAugmentedExplanation } from "./personality";
+
 export type BugCategory =
   | "thinking"
   | "emotional"
@@ -95,6 +97,8 @@ export interface BugChain {
   explanation: string;
   dominantPath: PropagationPath | null;
   spiralSeverity: SpiralSeverity;
+  personalityProfile?: PersonalityProfile;
+  personalityAugmented?: PersonalityAugmentedExplanation;
 }
 
 export interface BugMatchResult {

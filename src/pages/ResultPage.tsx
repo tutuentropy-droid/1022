@@ -10,6 +10,7 @@ import {
 import { MuseumHeader } from "../components/MuseumHeader";
 import { ExhibitHall } from "../components/ExhibitHall";
 import { ChainViewer } from "../components/ChainViewer";
+import { PersonalitySelector } from "../components/PersonalitySelector";
 import { useAppStore } from "../store/useAppStore";
 import { cn } from "../lib/utils";
 
@@ -63,7 +64,7 @@ export default function ResultPage() {
           </div>
 
           {userInput && (
-            <div className="mb-10 animate-fade-up opacity-0 stagger-delay-1">
+            <div className="mb-6 animate-fade-up opacity-0 stagger-delay-1">
               <div className="relative max-w-3xl mx-auto">
                 <div className="p-6 rounded-2xl bg-museum-wallLight/30 border border-museum-gold/15">
                   <span className="corner-decoration corner-decoration-tl" />
@@ -88,6 +89,8 @@ export default function ResultPage() {
               </div>
             </div>
           )}
+
+          {hasResults && <PersonalitySelector />}
 
           {isLoading ? (
             <LoadingState />
