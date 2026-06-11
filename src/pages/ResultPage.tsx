@@ -11,6 +11,7 @@ import { MuseumHeader } from "../components/MuseumHeader";
 import { ExhibitHall } from "../components/ExhibitHall";
 import { ChainViewer } from "../components/ChainViewer";
 import { PersonalitySelector } from "../components/PersonalitySelector";
+import { RelationshipResultViewer } from "../components/RelationshipResultViewer";
 import { useAppStore } from "../store/useAppStore";
 import { cn } from "../lib/utils";
 
@@ -25,7 +26,15 @@ export default function ResultPage() {
     toggleBugExpansion,
     clearResults,
     hasScanned,
+    debugMode,
+    relationshipResult,
+    isRelationshipLoading,
+    hasScannedRelationship,
   } = useAppStore();
+
+  if (debugMode === "relationship") {
+    return <RelationshipResultViewer />;
+  }
 
   const handleBack = () => {
     navigate("/");

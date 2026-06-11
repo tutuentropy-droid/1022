@@ -1,11 +1,19 @@
 import { create } from "zustand";
 import bugsData from "../data/bugs.json";
-import type { BugMatchResult, CognitiveBug, BugChain } from "../types/bug";
+import type {
+  BugMatchResult,
+  CognitiveBug,
+  BugChain,
+  DebugMode,
+  RelationshipInput,
+  RelationshipDebugResult,
+} from "../types/bug";
 import type { PersonalityProfile, PersonalityArchetype, BigFiveDimension } from "../types/personality";
 import { createBugMatcher } from "../services/bugMatcher";
 import { buildBugChain } from "../services/chainBuilder";
 import { createProfileFromArchetype } from "../services/personalityService";
 import { ARCHETYPES } from "../types/personality";
+import { createRelationshipAnalyzer } from "../services/relationshipAnalyzer";
 
 const STORAGE_KEY = "cognitive-bug-museum-state";
 
@@ -61,6 +69,12 @@ interface AppState {
   personalityProfile: PersonalityProfile;
   selectedArchetype: PersonalityArchetype;
 
+  debugMode: DebugMode;
+  relationshipInput: RelationshipInput;
+  relationshipResult: RelationshipDebugResult | null;
+  isRelationshipLoading: boolean;
+  hasScannedRelationship: boolean;
+
   setUserInput: (input: string) => void;
   analyzeThought: () => Promise<void>;
   setExpandedBugId: (id: string | null) => void;
@@ -70,6 +84,16 @@ interface AppState {
   setPersonalityArchetype: (archetype: PersonalityArchetype) => void;
   setPersonalityDimension: (dimension: BigFiveDimension, value: number) => void;
   setPersonalityProfile: (profile: PersonalityProfile) => void;
+
+  setDebugMode: (mode: DebugMode) => void;
+  setRelationshipParticipant: (role: "A" | "B", field: "name" | "description", value: string) => void;
+  setRelationshipScenario: (scenario: string) => void;
+  addDialogueTurn: (speaker: "A" | "B", content: string) => void;
+  updateDialogueTurn: (index: number, content: string) => void;
+  removeDialogueTurn: (index: number) => void;
+  clearDialogue: () => void;
+  analyzeRelationship: () => Promise<void>;
+  clearRelationshipResults: () => void;
 }
 
 const persisted = loadPersistedState();
@@ -79,6 +103,13 @@ const initialPersonalityProfile = persisted?.personalityProfile ?? createProfile
 const initialBugChain = initialMatchResults.length > 0
   ? buildBugChain(initialMatchResults, initialBugs, initialPersonalityProfile)
   : null;
+
+const initialRelationshipInput: RelationshipInput = {
+  participantA: { name: "A", description: "" },
+  participantB: { name: "B", description: "" },
+  scenario: "",
+  dialogue: [],
+};
 
 export const useAppStore = create<AppState>((set, get) => ({
   allBugs: initialBugs,
@@ -91,6 +122,12 @@ export const useAppStore = create<AppState>((set, get) => ({
   hasScanned: !!(persisted && (persisted.userInput || persisted.matchResults.length > 0)),
   personalityProfile: initialPersonalityProfile,
   selectedArchetype: initialPersonalityProfile.archetype ?? "the_balanced",
+
+  debugMode: "single",
+  relationshipInput: initialRelationshipInput,
+  relationshipResult: null,
+  isRelationshipLoading: false,
+  hasScannedRelationship: false,
 
   setUserInput: (input) => {
     set({ userInput: input });
@@ -201,5 +238,96 @@ export const useAppStore = create<AppState>((set, get) => ({
       const chain = buildBugChain(matchResults, allBugs, profile);
       set({ bugChain: chain });
     }
+  },
+
+  setDebugMode: (mode) => set({ debugMode: mode }),
+
+  setRelationshipParticipant: (role, field, value) =>
+    set((state) => {
+      const key = role === "A" ? "participantA" : "participantB";
+      return {
+        relationshipInput: {
+          ...state.relationshipInput,
+          [key]: {
+            ...state.relationshipInput[key],
+            [field]: value,
+          },
+        },
+      };
+    }),
+
+  setRelationshipScenario: (scenario) =>
+    set((state) => ({
+      relationshipInput: {
+        ...state.relationshipInput,
+        scenario,
+      },
+    })),
+
+  addDialogueTurn: (speaker, content) =>
+    set((state) => ({
+      relationshipInput: {
+        ...state.relationshipInput,
+        dialogue: [
+          ...state.relationshipInput.dialogue,
+          { speaker, content, timestamp: Date.now() },
+        ],
+      },
+    })),
+
+  updateDialogueTurn: (index, content) =>
+    set((state) => {
+      const newDialogue = [...state.relationshipInput.dialogue];
+      if (newDialogue[index]) {
+        newDialogue[index] = { ...newDialogue[index], content };
+      }
+      return {
+        relationshipInput: {
+          ...state.relationshipInput,
+          dialogue: newDialogue,
+        },
+      };
+    }),
+
+  removeDialogueTurn: (index) =>
+    set((state) => ({
+      relationshipInput: {
+        ...state.relationshipInput,
+        dialogue: state.relationshipInput.dialogue.filter((_, i) => i !== index),
+      },
+    })),
+
+  clearDialogue: () =>
+    set((state) => ({
+      relationshipInput: {
+        ...state.relationshipInput,
+        dialogue: [],
+      },
+    })),
+
+  analyzeRelationship: async () => {
+    const { relationshipInput, allBugs } = get();
+    if (relationshipInput.dialogue.length < 2) return;
+
+    set({ isRelationshipLoading: true, relationshipResult: null, hasScannedRelationship: true });
+
+    try {
+      const analyzer = createRelationshipAnalyzer(allBugs);
+      const result = await analyzer.analyze(relationshipInput);
+      set({ relationshipResult: result });
+    } catch (error) {
+      console.error("Relationship analysis failed:", error);
+      set({ relationshipResult: null });
+    } finally {
+      set({ isRelationshipLoading: false });
+    }
+  },
+
+  clearRelationshipResults: () => {
+    set({
+      relationshipResult: null,
+      hasScannedRelationship: false,
+      relationshipInput: initialRelationshipInput,
+    });
   },
 }));

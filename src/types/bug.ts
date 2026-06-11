@@ -187,3 +187,123 @@ export const nodeTypeColors: Record<SimulationNodeType, { bg: string; border: st
   outcome: { bg: "bg-purple-500/15", border: "border-purple-400/40", icon: "🎯" },
   belief: { bg: "bg-emerald-500/15", border: "border-emerald-400/40", icon: "🌟" },
 };
+
+export type DebugMode = "single" | "relationship";
+
+export type ParticipantRole = "A" | "B";
+
+export interface DialogueTurn {
+  speaker: ParticipantRole;
+  content: string;
+  timestamp?: number;
+}
+
+export interface RelationshipInput {
+  participantA: {
+    name: string;
+    description?: string;
+  };
+  participantB: {
+    name: string;
+    description?: string;
+  };
+  scenario: string;
+  dialogue: DialogueTurn[];
+}
+
+export interface EmotionalTrigger {
+  keyword: string;
+  emotion: string;
+  intensity: number;
+  description: string;
+}
+
+export interface TriggerChainNode {
+  step: number;
+  speaker: ParticipantRole;
+  content: string;
+  bug?: CognitiveBug;
+  bugMatchScore?: number;
+  emotion: string;
+  emotionIntensity: number;
+  triggers: EmotionalTrigger[];
+  interpretation: string;
+  underlyingBelief?: string;
+}
+
+export interface ParticipantTriggerChain {
+  participant: ParticipantRole;
+  name: string;
+  chain: TriggerChainNode[];
+  coreBugs: BugMatchResult[];
+  dominantEmotion: string;
+  primaryTrigger: string;
+}
+
+export interface EscalationStep {
+  step: number;
+  speaker: ParticipantRole;
+  action: string;
+  reaction: string;
+  intensityChange: number;
+  mechanism: string;
+}
+
+export interface MisunderstandingPoint {
+  id: string;
+  whatASaid: string;
+  whatAIntended: string;
+  whatBHeard: string;
+  whatBResponded: string;
+  distortion: string;
+  missingContext?: string;
+}
+
+export interface MisunderstandingFormation {
+  origin: string;
+  points: MisunderstandingPoint[];
+  reinforcementLoop: string;
+  alternativeInterpretation: string;
+}
+
+export interface RelationshipDebugResult {
+  input: RelationshipInput;
+  chainA: ParticipantTriggerChain;
+  chainB: ParticipantTriggerChain;
+  escalationPath: EscalationStep[];
+  misunderstanding: MisunderstandingFormation;
+  systemInsight: string;
+  deEscalationSuggestions: string[];
+}
+
+export const emotionLabels: Record<string, string> = {
+  anger: "愤怒",
+  sadness: "悲伤",
+  fear: "恐惧",
+  anxiety: "焦虑",
+  hurt: "受伤",
+  disappointment: "失望",
+  frustration: "挫败",
+  jealousy: "嫉妒",
+  insecurity: "不安",
+  rejection: "被拒绝",
+  ignored: "被忽视",
+  unvalued: "不被重视",
+  misunderstood: "被误解",
+  attacked: "被攻击",
+  controlled: "被控制",
+  happy: "开心",
+  grateful: "感激",
+  relieved: "释然",
+};
+
+export const escalationMechanisms: Record<string, string> = {
+  retaliation: "以牙还牙",
+  generalization: "上纲上线",
+  mindreading: "揣测动机",
+  catastrophizing: "灾难化",
+  defensiveness: "防御反击",
+  stonewalling: "冷战回避",
+  blaming: "指责推诿",
+  invalidation: "否定感受",
+};
