@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   ChevronDown,
   Flame,
@@ -13,11 +14,13 @@ import {
   Filter,
   Scale,
   Bug,
+  Brain,
 } from "lucide-react";
 import type { BugMatchResult } from "../types/bug";
 import { severityLabels } from "../types/bug";
 import { cn } from "../lib/utils";
 import { BugCardDetail } from "./BugCardDetail";
+import { BrainSimulator } from "./BrainSimulator";
 
 interface BugCardProps {
   matchResult: BugMatchResult;
@@ -68,6 +71,7 @@ export function BugCard({
   const { bug, matchScore } = matchResult;
   const IconComponent = bug.icon ? iconMap[bug.icon] || Bug : Bug;
   const styles = severityStyles[bug.severity];
+  const [showSimulator, setShowSimulator] = useState(false);
 
   return (
     <article
@@ -159,21 +163,34 @@ export function BugCard({
                   </div>
                 </div>
 
-                <div
-                  className={cn(
-                    "flex items-center gap-1 text-sm font-medium transition-all duration-300",
-                    isExpanded
-                      ? "text-museum-gold"
-                      : "text-museum-inkLight/50 group-hover:text-museum-gold"
-                  )}
-                >
-                  {isExpanded ? "收起" : "查看详情"}
-                  <ChevronDown
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowSimulator(true);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-museum-gold/20 to-museum-gold/10 border border-museum-gold/40 text-museum-gold hover:from-museum-gold/30 hover:to-museum-gold/20 transition-all duration-300 text-xs font-medium group"
+                  >
+                    <Brain className="w-3.5 h-3.5 group-hover:animate-pulse" />
+                    脑内模拟
+                  </button>
+
+                  <div
                     className={cn(
-                      "w-4 h-4 transition-transform duration-300",
-                      isExpanded && "rotate-180"
+                      "flex items-center gap-1 text-sm font-medium transition-all duration-300",
+                      isExpanded
+                        ? "text-museum-gold"
+                        : "text-museum-inkLight/50 group-hover:text-museum-gold"
                     )}
-                  />
+                  >
+                    {isExpanded ? "收起" : "查看详情"}
+                    <ChevronDown
+                      className={cn(
+                        "w-4 h-4 transition-transform duration-300",
+                        isExpanded && "rotate-180"
+                      )}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -186,6 +203,10 @@ export function BugCard({
           />
         </div>
       </div>
+
+      {showSimulator && (
+        <BrainSimulator bug={bug} onClose={() => setShowSimulator(false)} />
+      )}
     </article>
   );
 }

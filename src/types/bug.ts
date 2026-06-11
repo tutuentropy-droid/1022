@@ -140,3 +140,50 @@ export const rankColors: Record<BugRank, string> = {
   C: "#69db7c",
   D: "#74c0fc",
 };
+
+export type SimulationNodeType = "thought" | "emotion" | "behavior" | "outcome" | "belief";
+
+export interface SimulationNode {
+  id: string;
+  type: SimulationNodeType;
+  content: string;
+  isPositive?: boolean;
+  isReplaceable?: boolean;
+  replacementOptions?: ReplacementOption[];
+}
+
+export interface ReplacementOption {
+  id: string;
+  content: string;
+  description: string;
+  type: SimulationNodeType;
+}
+
+export interface SimulationPath {
+  bugId: string;
+  originalPath: SimulationNode[];
+  generatedAt: number;
+}
+
+export interface SimulationResult {
+  nodes: SimulationNode[];
+  outcome: string;
+  mood: "negative" | "neutral" | "positive";
+  isModified: boolean;
+}
+
+export const nodeTypeLabels: Record<SimulationNodeType, string> = {
+  thought: "想法",
+  emotion: "情绪",
+  behavior: "行为",
+  outcome: "结果",
+  belief: "信念",
+};
+
+export const nodeTypeColors: Record<SimulationNodeType, { bg: string; border: string; icon: string }> = {
+  thought: { bg: "bg-blue-500/15", border: "border-blue-400/40", icon: "💭" },
+  emotion: { bg: "bg-pink-500/15", border: "border-pink-400/40", icon: "💗" },
+  behavior: { bg: "bg-amber-500/15", border: "border-amber-400/40", icon: "🎬" },
+  outcome: { bg: "bg-purple-500/15", border: "border-purple-400/40", icon: "🎯" },
+  belief: { bg: "bg-emerald-500/15", border: "border-emerald-400/40", icon: "🌟" },
+};
