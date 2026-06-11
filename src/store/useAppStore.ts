@@ -7,6 +7,9 @@ import type {
   DebugMode,
   RelationshipInput,
   RelationshipDebugResult,
+  RelationshipSimulationResult,
+  FuturePathType,
+  RelationshipReplacementOption,
 } from "../types/bug";
 import type { PersonalityProfile, PersonalityArchetype, BigFiveDimension } from "../types/personality";
 import { createBugMatcher } from "../services/bugMatcher";
@@ -75,6 +78,11 @@ interface AppState {
   isRelationshipLoading: boolean;
   hasScannedRelationship: boolean;
 
+  simulation: RelationshipSimulationResult | null;
+  simulationBaseline: RelationshipSimulationResult | null;
+  simulationSelectedPathId: FuturePathType | null;
+  simulationIsModified: boolean;
+
   setUserInput: (input: string) => void;
   analyzeThought: () => Promise<void>;
   setExpandedBugId: (id: string | null) => void;
@@ -94,6 +102,15 @@ interface AppState {
   clearDialogue: () => void;
   analyzeRelationship: () => Promise<void>;
   clearRelationshipResults: () => void;
+
+  setSimulation: (simulation: RelationshipSimulationResult) => void;
+  setSimulationSelectedPathId: (pathId: FuturePathType | null) => void;
+  resimulateWithReplacement: (
+    pathId: FuturePathType,
+    stepId: string,
+    replacement: RelationshipReplacementOption
+  ) => void;
+  resetSimulation: () => void;
 }
 
 const persisted = loadPersistedState();
@@ -128,6 +145,11 @@ export const useAppStore = create<AppState>((set, get) => ({
   relationshipResult: null,
   isRelationshipLoading: false,
   hasScannedRelationship: false,
+
+  simulation: null,
+  simulationBaseline: null,
+  simulationSelectedPathId: null,
+  simulationIsModified: false,
 
   setUserInput: (input) => {
     set({ userInput: input });
@@ -309,15 +331,29 @@ export const useAppStore = create<AppState>((set, get) => ({
     const { relationshipInput, allBugs } = get();
     if (relationshipInput.dialogue.length < 2) return;
 
-    set({ isRelationshipLoading: true, relationshipResult: null, hasScannedRelationship: true });
+    set({
+      isRelationshipLoading: true,
+      relationshipResult: null,
+      hasScannedRelationship: true,
+      simulation: null,
+      simulationBaseline: null,
+      simulationSelectedPathId: null,
+      simulationIsModified: false,
+    });
 
     try {
       const analyzer = createRelationshipAnalyzer(allBugs);
       const result = await analyzer.analyze(relationshipInput);
-      set({ relationshipResult: result });
+      set({
+        relationshipResult: result,
+        simulation: result.simulation || null,
+        simulationBaseline: result.simulation || null,
+        simulationSelectedPathId: result.simulation?.selectedPathId || null,
+        simulationIsModified: false,
+      });
     } catch (error) {
       console.error("Relationship analysis failed:", error);
-      set({ relationshipResult: null });
+      set({ relationshipResult: null, simulation: null, simulationBaseline: null });
     } finally {
       set({ isRelationshipLoading: false });
     }
@@ -328,6 +364,53 @@ export const useAppStore = create<AppState>((set, get) => ({
       relationshipResult: null,
       hasScannedRelationship: false,
       relationshipInput: initialRelationshipInput,
+      simulation: null,
+      simulationBaseline: null,
+      simulationSelectedPathId: null,
+      simulationIsModified: false,
     });
+  },
+
+  setSimulation: (simulation) => {
+    set({ simulation });
+    if (simulation.selectedPathId) {
+      set({ simulationSelectedPathId: simulation.selectedPathId });
+    }
+  },
+
+  setSimulationSelectedPathId: (pathId) => {
+    set({ simulationSelectedPathId: pathId });
+  },
+
+  resimulateWithReplacement: (pathId, stepId, replacement) => {
+    const { relationshipResult, allBugs } = get();
+    if (!relationshipResult) return;
+
+    const analyzer = createRelationshipAnalyzer(allBugs);
+    const newSimulation = analyzer.resimulatePathWithReplacement(
+      relationshipResult,
+      pathId,
+      stepId,
+      replacement
+    );
+
+    if (newSimulation) {
+      set({
+        simulation: newSimulation,
+        simulationSelectedPathId: pathId,
+        simulationIsModified: true,
+      });
+    }
+  },
+
+  resetSimulation: () => {
+    const { simulationBaseline } = get();
+    if (simulationBaseline) {
+      set({
+        simulation: simulationBaseline,
+        simulationSelectedPathId: simulationBaseline.selectedPathId || null,
+        simulationIsModified: false,
+      });
+    }
   },
 }));

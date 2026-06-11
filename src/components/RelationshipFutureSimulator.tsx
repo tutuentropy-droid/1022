@@ -18,14 +18,11 @@ import type {
   RelationshipFuturePath,
   RelationshipStep,
   RelationshipReplacementOption,
-  RelationshipSimulationResult,
   RelationshipDebugResult,
   FuturePathType,
 } from "../types/bug";
-import { createRelationshipAnalyzer } from "../services/relationshipAnalyzer";
-import bugsData from "../data/bugs.json";
-import type { CognitiveBug } from "../types/bug";
 import { cn } from "../lib/utils";
+import { useAppStore } from "../store/useAppStore";
 
 interface RelationshipFutureSimulatorProps {
   result: RelationshipDebugResult;
@@ -64,28 +61,30 @@ const pathIcons: Record<FuturePathType, React.ReactNode> = {
 };
 
 export function RelationshipFutureSimulator({ result }: RelationshipFutureSimulatorProps) {
-  const [simulation, setSimulation] = useState<RelationshipSimulationResult | null>(
-    result.simulation || null
-  );
-  const [selectedPathId, setSelectedPathId] = useState<FuturePathType | null>(
-    result.simulation?.selectedPathId || null
-  );
+  const {
+    simulation,
+    simulationBaseline,
+    simulationSelectedPathId,
+    simulationIsModified,
+    setSimulationSelectedPathId,
+    resimulateWithReplacement,
+    resetSimulation,
+  } = useAppStore();
+
   const [animatingIndex, setAnimatingIndex] = useState(-1);
   const [selectedStepId, setSelectedStepId] = useState<string | null>(null);
   const [showReplacements, setShowReplacements] = useState(false);
   const [isResimulating, setIsResimulating] = useState(false);
-  const [isModified, setIsModified] = useState(false);
 
+  const selectedPathId = simulationSelectedPathId;
+  const isModified = simulationIsModified;
   const selectedPath = simulation?.paths.find((p) => p.id === selectedPathId) || null;
 
   useEffect(() => {
-    if (result.simulation) {
-      setSimulation(result.simulation);
-      if (!selectedPathId) {
-        setSelectedPathId(result.simulation.selectedPathId || null);
-      }
+    if (!simulation && result.simulation) {
+      useAppStore.getState().setSimulation(result.simulation);
     }
-  }, [result.simulation]);
+  }, [simulation, result.simulation]);
 
   useEffect(() => {
     if (selectedPath) {
@@ -123,19 +122,7 @@ export function RelationshipFutureSimulator({ result }: RelationshipFutureSimula
     setIsResimulating(true);
 
     setTimeout(() => {
-      const analyzer = createRelationshipAnalyzer(bugsData as CognitiveBug[]);
-      const newSimulation = analyzer.resimulatePathWithReplacement(
-        result,
-        selectedPath.id,
-        selectedStepId,
-        replacement
-      );
-
-      if (newSimulation) {
-        setSimulation(newSimulation);
-        setIsModified(true);
-      }
-
+      resimulateWithReplacement(selectedPath.id, selectedStepId, replacement);
       setIsResimulating(false);
       setSelectedStepId(null);
     }, 700);
@@ -144,11 +131,7 @@ export function RelationshipFutureSimulator({ result }: RelationshipFutureSimula
   const handleReset = () => {
     setIsResimulating(true);
     setTimeout(() => {
-      if (result.simulation) {
-        setSimulation(result.simulation);
-        setSelectedPathId(result.simulation.selectedPathId || null);
-      }
-      setIsModified(false);
+      resetSimulation();
       setSelectedStepId(null);
       setShowReplacements(false);
       setIsResimulating(false);
@@ -202,16 +185,23 @@ export function RelationshipFutureSimulator({ result }: RelationshipFutureSimula
           {simulation.paths.map((path) => {
             const isSelected = selectedPathId === path.id;
             const tone = toneConfig[path.overallTone];
+            const baselineProb = simulationBaseline?.paths.find((bp) => bp.id === path.id)?.probability;
+            const probDiff = baselineProb !== undefined ? path.probability - baselineProb : 0;
+            const hasSignificantChange = Math.abs(probDiff) >= 3;
+
             return (
               <button
                 key={path.id}
-                onClick={() => setSelectedPathId(path.id)}
+                onClick={() => setSimulationSelectedPathId(path.id)}
                 className={cn(
                   "relative p-4 rounded-xl border-2 transition-all duration-300 text-left",
                   "hover:scale-[1.02]",
                   isSelected
                     ? cn(tone.bgColor, tone.borderColor, "scale-[1.02] shadow-lg")
-                    : "bg-museum-wallLight/20 border-museum-gold/10 hover:border-museum-gold/30"
+                    : "bg-museum-wallLight/20 border-museum-gold/10 hover:border-museum-gold/30",
+                  hasSignificantChange && isModified && "ring-2 ring-offset-2 ring-offset-museum-wall animate-pulse",
+                  hasSignificantChange && isModified && probDiff > 0 && "ring-emerald-400/60",
+                  hasSignificantChange && isModified && probDiff < 0 && "ring-museum-warning/60"
                 )}
               >
                 <div className="flex items-center gap-2 mb-2">
@@ -219,6 +209,17 @@ export function RelationshipFutureSimulator({ result }: RelationshipFutureSimula
                     {pathIcons[path.id] || path.icon}
                   </span>
                   <span className="text-lg">{path.icon}</span>
+                  {hasSignificantChange && isModified && (
+                    <span className={cn(
+                      "ml-auto inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-bold",
+                      probDiff > 0
+                        ? "bg-emerald-500/25 text-emerald-300"
+                        : "bg-museum-warning/25 text-museum-warningLight"
+                    )}>
+                      {probDiff > 0 ? "↑" : "↓"}
+                      {Math.abs(probDiff)}
+                    </span>
+                  )}
                 </div>
                 <p className={cn(
                   "font-medium text-sm mb-1",
@@ -235,7 +236,7 @@ export function RelationshipFutureSimulator({ result }: RelationshipFutureSimula
                   </span>
                   <div className="w-12 h-1.5 rounded-full bg-museum-wall overflow-hidden">
                     <div
-                      className={cn("h-full rounded-full transition-all duration-500", tone.barColor)}
+                      className={cn("h-full rounded-full transition-all duration-1000", tone.barColor)}
                       style={{ width: `${path.probability}%` }}
                     />
                   </div>
@@ -348,11 +349,28 @@ export function RelationshipFutureSimulator({ result }: RelationshipFutureSimula
         </div>
       )}
 
-      {!isModified && (
+      {!isModified ? (
         <div className="text-center py-2">
           <p className="text-xs text-museum-paper/40 font-body max-w-2xl mx-auto leading-relaxed">
             💡 提示：路径中带有 <span className="inline-flex items-center gap-1 text-museum-gold/80">✨高亮边框</span> 的节点是「可改写的互动时刻」。
             试着在那个瞬间，换一种表达方式、换一种回应方式——看看蝴蝶扇动翅膀后，未来会飞向哪里。
+          </p>
+        </div>
+      ) : (
+        <div className="text-center py-4 px-4 rounded-xl bg-gradient-to-r from-emerald-500/10 via-museum-gold/10 to-emerald-500/10 border border-emerald-400/20">
+          <div className="flex items-center justify-center gap-3 flex-wrap">
+            <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-emerald-500/20 border border-emerald-400/30 text-xs text-emerald-300">
+              <span className="font-bold">↑ 绿色</span>
+              <span>概率上升</span>
+            </div>
+            <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-museum-warning/20 border border-museum-warning/30 text-xs text-museum-warningLight">
+              <span className="font-bold">↓ 橙色</span>
+              <span>概率下降</span>
+            </div>
+          </div>
+          <p className="mt-3 text-xs text-museum-paper/60 font-body max-w-2xl mx-auto leading-relaxed">
+            🦋 看，仅仅是一个瞬间的不同回应，所有未来路径的概率都重新分布了。
+            这不是「预测」，而是在展示——<b className="text-museum-gold/80">每一个微小的选择，都在悄悄改变长期关系的走向</b>。
           </p>
         </div>
       )}

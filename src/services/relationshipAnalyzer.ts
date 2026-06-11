@@ -1207,17 +1207,101 @@ export class RelationshipAnalyzer {
       finalOutcome: this.generateAdjustedOutcome(originalPath.finalOutcome, nameA, nameB, replacement),
     };
 
-    const newPaths = result.simulation.paths.map((p) =>
-      p.id === pathId ? modifiedPath : p
+    const redistributedPaths = this.redistributeProbabilities(
+      result.simulation.paths.map((p) => (p.id === pathId ? modifiedPath : p)),
+      pathId,
+      modifiedPath.overallTone
     );
-    newPaths.sort((a, b) => b.probability - a.probability);
+
+    redistributedPaths.sort((a, b) => b.probability - a.probability);
 
     return {
       ...result.simulation,
-      paths: newPaths,
+      paths: redistributedPaths,
       modifiedPathId: pathId,
       originalPathId: pathId,
+      selectedPathId: redistributedPaths[0]?.id,
     };
+  }
+
+  private redistributeProbabilities(
+    paths: RelationshipFuturePath[],
+    changedPathId: FuturePathType,
+    newTone: "negative" | "neutral" | "positive"
+  ): RelationshipFuturePath[] {
+    const pathTones: Record<FuturePathType, "positive" | "negative" | "neutral"> = {
+      repair: "positive",
+      boundary_rebuild: "positive",
+      stagnation: "neutral",
+      drifting_apart: "negative",
+      deterioration: "negative",
+    };
+
+    let positiveBoost = 0;
+    let negativeReduction = 0;
+    const changedPath = paths.find((p) => p.id === changedPathId)!;
+    const changedTone = pathTones[changedPathId];
+
+    if (newTone === "positive") {
+      positiveBoost = 15;
+      negativeReduction = -10;
+    } else if (newTone === "neutral") {
+      positiveBoost = 5;
+      negativeReduction = -3;
+    }
+
+    const sameToneBonus = changedTone === newTone ? 10 : 5;
+    changedPath.probability = Math.min(80, changedPath.probability + sameToneBonus + positiveBoost);
+
+    return paths.map((p) => {
+      if (p.id === changedPathId) {
+        return { ...p, probability: changedPath.probability };
+      }
+
+      const tone = pathTones[p.id];
+      let delta = 0;
+
+      if (tone === "positive") {
+        delta = positiveBoost - 5;
+      } else if (tone === "negative") {
+        delta = negativeReduction;
+      } else {
+        delta = Math.floor(negativeReduction / 2);
+      }
+
+      const newProb = Math.max(3, p.probability + delta);
+      const newHealth = Math.min(
+        100,
+        Math.max(
+          5,
+          tone === "positive"
+            ? p.relationshipHealthScore + 5
+            : tone === "negative"
+              ? p.relationshipHealthScore - 8
+              : p.relationshipHealthScore - 2
+        )
+      );
+
+      return {
+        ...p,
+        probability: newProb,
+        relationshipHealthScore: newHealth,
+      };
+    }).map((p) => {
+      const total = paths.reduce((sum, pp) => {
+        if (pp.id === changedPathId) return sum + changedPath.probability;
+        const tone = pathTones[pp.id];
+        let delta = 0;
+        if (tone === "positive") delta = positiveBoost - 5;
+        else if (tone === "negative") delta = negativeReduction;
+        else delta = Math.floor(negativeReduction / 2);
+        return sum + Math.max(3, pp.probability + delta);
+      }, 0);
+      return {
+        ...p,
+        probability: Math.round((p.probability / total) * 100),
+      };
+    });
   }
 
   private transformStepsAfterReplacement(
