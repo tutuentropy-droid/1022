@@ -1,14 +1,15 @@
 import { useState } from "react";
-import { ArrowLeft, RefreshCw, Users, Lightbulb, MessageCircle, Info } from "lucide-react";
+import { ArrowLeft, RefreshCw, Users, Lightbulb, MessageCircle, Info, Globe2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAppStore } from "../store/useAppStore";
 import { TriggerChainViewer } from "./TriggerChainViewer";
 import { EscalationPathViewer } from "./EscalationPathViewer";
 import { MisunderstandingViewer } from "./MisunderstandingViewer";
+import { RelationshipFutureSimulator } from "./RelationshipFutureSimulator";
 import { MuseumHeader } from "./MuseumHeader";
 import { cn } from "../lib/utils";
 
-type TabType = "chains" | "escalation" | "misunderstanding";
+type TabType = "chains" | "escalation" | "misunderstanding" | "future";
 
 export function RelationshipResultViewer() {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export function RelationshipResultViewer() {
     hasScannedRelationship,
   } = useAppStore();
 
-  const [activeTab, setActiveTab] = useState<TabType>("chains");
+  const [activeTab, setActiveTab] = useState<TabType>("future");
 
   const handleBack = () => {
     navigate("/");
@@ -57,6 +58,7 @@ export function RelationshipResultViewer() {
   const nameB = relationshipResult.input.participantB.name || "B";
 
   const tabs: { id: TabType; label: string; icon: React.ReactNode }[] = [
+    { id: "future", label: "未来模拟器", icon: <Globe2 className="w-4 h-4" /> },
     { id: "chains", label: "双方触发链", icon: <MessageCircle className="w-4 h-4" /> },
     { id: "escalation", label: "冲突升级路径", icon: <Users className="w-4 h-4" /> },
     { id: "misunderstanding", label: "误解形成", icon: <Lightbulb className="w-4 h-4" /> },
@@ -163,6 +165,10 @@ export function RelationshipResultViewer() {
           </div>
 
           <div className="animate-fade-up opacity-0 stagger-delay-3">
+            {activeTab === "future" && relationshipResult && (
+              <RelationshipFutureSimulator result={relationshipResult} />
+            )}
+
             {activeTab === "chains" && (
               <div className="grid gap-6 md:grid-cols-2">
                 <TriggerChainViewer chain={relationshipResult.chainA} participantLabel={nameA} />

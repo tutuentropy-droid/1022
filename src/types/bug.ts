@@ -266,6 +266,56 @@ export interface MisunderstandingFormation {
   alternativeInterpretation: string;
 }
 
+export type FuturePathType =
+  | "deterioration"
+  | "repair"
+  | "drifting_apart"
+  | "boundary_rebuild"
+  | "stagnation";
+
+export interface RelationshipStep {
+  id: string;
+  round: number;
+  speaker: "A" | "B";
+  speakerName: string;
+  action: string;
+  interpretation: string;
+  emotion: string;
+  emotionIntensity: number;
+  mechanism: string;
+  isReplaceable?: boolean;
+  replacementOptions?: RelationshipReplacementOption[];
+}
+
+export interface RelationshipReplacementOption {
+  id: string;
+  content: string;
+  interpretation: string;
+  emotion: string;
+  emotionIntensity: number;
+  description: string;
+}
+
+export interface RelationshipFuturePath {
+  id: FuturePathType;
+  name: string;
+  icon: string;
+  description: string;
+  probability: number;
+  steps: RelationshipStep[];
+  finalOutcome: string;
+  overallTone: "negative" | "neutral" | "positive";
+  relationshipHealthScore: number;
+}
+
+export interface RelationshipSimulationResult {
+  paths: RelationshipFuturePath[];
+  baselineHealthScore: number;
+  selectedPathId?: FuturePathType;
+  modifiedPathId?: FuturePathType;
+  originalPathId?: FuturePathType;
+}
+
 export interface RelationshipDebugResult {
   input: RelationshipInput;
   chainA: ParticipantTriggerChain;
@@ -274,6 +324,7 @@ export interface RelationshipDebugResult {
   misunderstanding: MisunderstandingFormation;
   systemInsight: string;
   deEscalationSuggestions: string[];
+  simulation?: RelationshipSimulationResult;
 }
 
 export const emotionLabels: Record<string, string> = {
