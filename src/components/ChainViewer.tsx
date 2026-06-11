@@ -303,9 +303,17 @@ function ChainGraph({
             <stop offset="0%" stopColor="rgba(255, 107, 107, 0.9)" />
             <stop offset="100%" stopColor="rgba(255, 169, 77, 0.6)" />
           </linearGradient>
+          <linearGradient id="edgeDominantPotential" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="rgba(255, 107, 107, 0.6)" />
+            <stop offset="100%" stopColor="rgba(255, 169, 77, 0.35)" />
+          </linearGradient>
           <linearGradient id="edgeGlow" x1="0%" y1="0%" x2="0%" y2="100%">
             <stop offset="0%" stopColor="rgba(255, 107, 107, 0.9)" />
             <stop offset="100%" stopColor="rgba(255, 169, 77, 0.5)" />
+          </linearGradient>
+          <linearGradient id="edgeGlowPotential" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="rgba(245, 240, 230, 0.7)" />
+            <stop offset="100%" stopColor="rgba(245, 240, 230, 0.4)" />
           </linearGradient>
           <filter id="glow-strong">
             <feGaussianBlur stdDeviation="4" result="coloredBlur" />
@@ -352,6 +360,16 @@ function ChainGraph({
             <polygon points="0 0, 10 3.5, 0 7" fill="rgba(255, 107, 107, 0.9)" />
           </marker>
           <marker
+            id="arrowhead-dominant-potential"
+            markerWidth="10"
+            markerHeight="7"
+            refX="9"
+            refY="3.5"
+            orient="auto"
+          >
+            <polygon points="0 0, 10 3.5, 0 7" fill="rgba(255, 107, 107, 0.55)" />
+          </marker>
+          <marker
             id="arrowhead-glow"
             markerWidth="10"
             markerHeight="7"
@@ -384,10 +402,14 @@ function ChainGraph({
           let markerEnd = "url(#arrowhead-matched)";
           let strokeWidth = 2;
 
-          if (isDominant) {
+          if (isDominant && !isPotential) {
             strokeUrl = "url(#edgeDominant)";
             markerEnd = "url(#arrowhead-dominant)";
             strokeWidth = 2.5;
+          } else if (isDominant && isPotential) {
+            strokeUrl = "url(#edgeDominantPotential)";
+            markerEnd = "url(#arrowhead-dominant-potential)";
+            strokeWidth = 2;
           } else if (isPotential) {
             strokeUrl = "url(#edgeGradientPotential)";
             markerEnd = "url(#arrowhead-potential)";
@@ -395,12 +417,13 @@ function ChainGraph({
           }
 
           if (isHovered) {
-            strokeUrl = "url(#edgeGlow)";
+            strokeUrl = isPotential ? "url(#edgeGlowPotential)" : "url(#edgeGlow)";
             markerEnd = "url(#arrowhead-glow)";
             strokeWidth = 3;
           }
 
           const opacity = shouldHighlight || !hoveredBug ? 1 : 0.3;
+          const useDash = isPotential;
 
           return (
             <g key={edgeKey} style={{ opacity, transition: "opacity 0.3s" }}>
@@ -409,9 +432,9 @@ function ChainGraph({
                 fill="none"
                 stroke={strokeUrl}
                 strokeWidth={strokeWidth}
-                strokeDasharray={isPotential && !isDominant ? "5,5" : "none"}
+                strokeDasharray={useDash ? "6,5" : "none"}
                 markerEnd={markerEnd}
-                filter={isHovered || isDominant ? "url(#glow)" : "none"}
+                filter={isHovered || (isDominant && !isPotential) ? "url(#glow)" : "none"}
                 className="transition-all duration-300 cursor-pointer"
                 onMouseEnter={() => setHoveredEdge(edgeKey)}
                 onMouseLeave={() => setHoveredEdge(null)}

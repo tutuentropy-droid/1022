@@ -292,11 +292,10 @@ function generateExplanation(
 
   if (dominantPath && dominantPath.nodes.length >= 3) {
     const pathNames = dominantPath.nodes
-      .filter((n) => n.isMatched)
-      .map((n) => n.bug.name)
+      .map((n) => n.isMatched ? `「${n.bug.name}」` : `「${n.bug.name}」⚠️`)
       .join(" → ");
 
-    explanation = `你的脑内故障链从「${triggerBug.name}」开始，\n沿着 ${pathNames} 的路径不断向下蔓延。\n\n`;
+    explanation = `你的脑内故障链从「${triggerBug.name}」开始，\n沿着 ${pathNames} 的路径不断向下蔓延。\n（标注 ⚠️ 的是尚未被明确触发但高度易感的节点）\n\n`;
   } else {
     const matchedNames = matchedNodes.map((n) => n.bug.name).join("、");
     explanation = `你的想法触发了 ${matchedNodes.length} 个认知 Bug：${matchedNames}。\n它们不是孤立存在的，而是互相触发、互相加强，形成了一个向下的思维螺旋。\n\n`;
@@ -306,31 +305,47 @@ function generateExplanation(
 
   explanation += `认知 Bug 不是单独出现的，它们像多米诺骨牌一样连锁反应。每一个偏差都会为下一个偏差创造条件：\n\n`;
 
-  const matchedEdges = edges.filter((e) => e.type === "matched");
-  const levelMap = new Map<number, ChainNode[]>();
-  nodes.forEach((node) => {
-    if (!levelMap.has(node.level)) {
-      levelMap.set(node.level, []);
+  const edgeMap = new Map<string, ChainEdge>();
+  edges.forEach((e) => edgeMap.set(`${e.from}-${e.to}`, e));
+
+  if (dominantPath && dominantPath.nodes.length >= 2) {
+    for (let i = 0; i < dominantPath.nodes.length - 1; i++) {
+      const fromNode = dominantPath.nodes[i];
+      const toNode = dominantPath.nodes[i + 1];
+      const edge = dominantPath.edges[i];
+      if (!edge) continue;
+
+      const potentialMark = edge.type === "potential" ? "  ⚠️（高风险传播）" : "";
+      explanation += `${i + 1}. 「${fromNode.bug.name}」 → 「${toNode.bug.name}」${potentialMark}\n`;
+      explanation += `   → ${edge.reason}（强度 ${Math.round(edge.strength * 100)}%）\n\n`;
     }
-    levelMap.get(node.level)!.push(node);
-  });
+  } else {
+    const matchedEdges = edges.filter((e) => e.type === "matched");
+    const levelMap = new Map<number, ChainNode[]>();
+    nodes.forEach((node) => {
+      if (!levelMap.has(node.level)) {
+        levelMap.set(node.level, []);
+      }
+      levelMap.get(node.level)!.push(node);
+    });
 
-  const levelKeys = Array.from(levelMap.keys()).sort((a, b) => a - b);
+    const levelKeys = Array.from(levelMap.keys()).sort((a, b) => a - b);
 
-  let step = 1;
-  for (let i = 0; i < levelKeys.length - 1; i++) {
-    const currentLevel = levelMap.get(levelKeys[i])!;
-    const nextLevel = levelMap.get(levelKeys[i + 1])!;
+    let step = 1;
+    for (let i = 0; i < levelKeys.length - 1; i++) {
+      const currentLevel = levelMap.get(levelKeys[i])!;
+      const nextLevel = levelMap.get(levelKeys[i + 1])!;
 
-    for (const fromNode of currentLevel) {
-      if (!fromNode.isMatched) continue;
-      for (const toNode of nextLevel) {
-        const edge = matchedEdges.find(
-          (e) => e.from === fromNode.bugId && e.to === toNode.bugId
-        );
-        if (edge) {
-          explanation += `${step}. 「${fromNode.bug.name}」 → 「${toNode.bug.name}」\n   → ${edge.reason}\n\n`;
-          step++;
+      for (const fromNode of currentLevel) {
+        if (!fromNode.isMatched) continue;
+        for (const toNode of nextLevel) {
+          const edge = matchedEdges.find(
+            (e) => e.from === fromNode.bugId && e.to === toNode.bugId
+          );
+          if (edge) {
+            explanation += `${step}. 「${fromNode.bug.name}」 → 「${toNode.bug.name}」\n   → ${edge.reason}\n\n`;
+            step++;
+          }
         }
       }
     }

@@ -63,12 +63,17 @@ interface AppState {
 }
 
 const persisted = loadPersistedState();
+const initialBugs = bugsData as CognitiveBug[];
+const initialMatchResults = persisted?.matchResults ?? [];
+const initialBugChain = initialMatchResults.length > 0
+  ? buildBugChain(initialMatchResults, initialBugs)
+  : null;
 
 export const useAppStore = create<AppState>((set, get) => ({
-  allBugs: bugsData as CognitiveBug[],
+  allBugs: initialBugs,
   userInput: persisted?.userInput ?? "",
-  matchResults: persisted?.matchResults ?? [],
-  bugChain: null,
+  matchResults: initialMatchResults,
+  bugChain: initialBugChain,
   isLoading: false,
   expandedBugId: null,
   matcherType: "keyword",
