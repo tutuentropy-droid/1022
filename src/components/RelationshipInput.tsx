@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Plus, Trash2, Sparkles, Loader2, MessageCircle, RefreshCw } from "lucide-react";
+import { Plus, Trash2, Sparkles, Loader2, MessageCircle, RefreshCw, AlertCircle } from "lucide-react";
 import { useAppStore } from "../store/useAppStore";
 import { useNavigate } from "react-router-dom";
 import { cn } from "../lib/utils";
@@ -54,6 +54,11 @@ export function RelationshipInput() {
 
   const [newSpeaker, setNewSpeaker] = useState<ParticipantRole>("A");
   const [newContent, setNewContent] = useState("");
+  const [validationError, setValidationError] = useState<string | null>(null);
+
+  const speakersInDialogue = new Set(relationshipInput.dialogue.map((t) => t.speaker));
+  const hasBothSpeakers = speakersInDialogue.has("A") && speakersInDialogue.has("B");
+  const canSubmit = relationshipInput.dialogue.length >= 2 && hasBothSpeakers;
 
   const handleAddTurn = () => {
     if (newContent.trim()) {
@@ -65,10 +70,23 @@ export function RelationshipInput() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (relationshipInput.dialogue.length >= 2) {
-      await analyzeRelationship();
-      navigate("/result");
+    setValidationError(null);
+
+    if (relationshipInput.dialogue.length < 2) {
+      setValidationError("至少需要2轮对话才能进行分析");
+      return;
     }
+
+    if (!hasBothSpeakers) {
+      const missingSpeaker = !speakersInDialogue.has("A")
+        ? relationshipInput.participantA.name || "A"
+        : relationshipInput.participantB.name || "B";
+      setValidationError(`需要双方都有发言才能分析，${missingSpeaker} 还没有说过话`);
+      return;
+    }
+
+    await analyzeRelationship();
+    navigate("/result");
   };
 
   const handleLoadExample = (example: typeof exampleScenarios[0]) => {
@@ -272,13 +290,27 @@ export function RelationshipInput() {
         </div>
       </div>
 
+      {validationError && (
+        <div className="animate-fade-in">
+          <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-400/30 flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-rose-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm text-rose-300 font-medium">{validationError}</p>
+              <p className="text-xs text-rose-300/60 mt-1">
+                请确保对话中包含双方的发言，这样才能进行有效的关系分析
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="pt-4">
         <button
           type="submit"
-          disabled={isRelationshipLoading || relationshipInput.dialogue.length < 2}
+          disabled={isRelationshipLoading || !canSubmit}
           className={cn(
             "w-full flex items-center justify-center gap-2 py-4 rounded-xl font-medium text-base transition-all duration-300",
-            isRelationshipLoading || relationshipInput.dialogue.length < 2
+            isRelationshipLoading || !canSubmit
               ? "bg-museum-gold/30 text-museum-inkLight/50 cursor-not-allowed"
               : "bg-gold-gradient text-museum-ink shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
           )}
@@ -292,8 +324,12 @@ export function RelationshipInput() {
             <>
               <Sparkles className="w-5 h-5 transition-transform group-hover:rotate-12" />
               开始关系 Debug
-              {relationshipInput.dialogue.length < 2 && (
-                <span className="text-xs opacity-60 ml-2">(至少需要2轮对话)</span>
+              {!canSubmit && (
+                <span className="text-xs opacity-60 ml-2">
+                  {relationshipInput.dialogue.length < 2
+                    ? "(至少需要2轮对话)"
+                    : "(需要双方都有发言)"}
+                </span>
               )}
             </>
           )}

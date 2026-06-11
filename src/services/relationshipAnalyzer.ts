@@ -52,6 +52,21 @@ export class RelationshipAnalyzer {
   }
 
   async analyze(input: RelationshipInput): Promise<RelationshipDebugResult> {
+    const speakersInDialogue = new Set(input.dialogue.map((t) => t.speaker));
+    const hasA = speakersInDialogue.has("A");
+    const hasB = speakersInDialogue.has("B");
+
+    if (!hasA || !hasB) {
+      const missing = !hasA
+        ? input.participantA.name || "A"
+        : input.participantB.name || "B";
+      throw new Error(`需要双方都有发言才能进行分析，${missing} 还没有说过话`);
+    }
+
+    if (input.dialogue.length < 2) {
+      throw new Error("至少需要2轮对话才能进行分析");
+    }
+
     const chainA = await this.buildParticipantChain(input, "A");
     const chainB = await this.buildParticipantChain(input, "B");
     const escalationPath = this.buildEscalationPath(input, chainA, chainB);
@@ -470,21 +485,35 @@ export class RelationshipAnalyzer {
     const bEmotion = chainB.dominantEmotion;
     const aTrigger = chainA.primaryTrigger;
     const bTrigger = chainB.primaryTrigger;
+    const hasASpoken = chainA.chain.length > 0;
+    const hasBSpoken = chainB.chain.length > 0;
+
+    if (!hasASpoken || !hasBSpoken) {
+      const missing = !hasASpoken ? chainA.name : chainB.name;
+      return `目前只有一方发言，无法完整分析互动模式。请确保 ${missing} 也有对话记录，这样才能看到完整的循环模式。`;
+    }
+
+    const displayATrigger =
+      aTrigger && aTrigger !== "无明显触发点" ? `「${aTrigger}」` : "某些信号";
+    const displayBTrigger =
+      bTrigger && bTrigger !== "无明显触发点" ? `「${bTrigger}」` : "某些信号";
+    const displayAEmotion = aEmotion && aEmotion !== "平静" ? `「${aEmotion}」` : "负面情绪";
+    const displayBEmotion = bEmotion && bEmotion !== "平静" ? `「${bEmotion}」` : "负面情绪";
 
     if (aEmotion === "愤怒" && bEmotion === "愤怒") {
-      return `双方进入「以牙还牙」循环：A 被「${bTrigger}」触发愤怒，用攻击性语言回应；B 又被 A 的「${aTrigger}」触发更大的愤怒。每一轮对话都在给对方的火上浇油。`;
+      return `双方进入「以牙还牙」循环：${chainA.name} 被 ${displayBTrigger} 触发愤怒，用攻击性语言回应；${chainB.name} 又被 ${displayATrigger} 触发更大的愤怒。每一轮对话都在给对方的火上浇油。`;
     }
     if ((aEmotion === "被忽视" || aEmotion === "不被重视") && bEmotion === "愤怒") {
-      return `「追逃模式」形成：A 觉得「${aTrigger}」感到被忽视，想要靠近和沟通；B 感受到压力和指责，用「${bTrigger}」表达愤怒和推开。一个追一个逃，距离越来越远。`;
+      return `「追逃模式」形成：${chainA.name} 觉得 ${displayATrigger} 感到被忽视，想要靠近和沟通；${chainB.name} 感受到压力和指责，用 ${displayBTrigger} 表达愤怒和推开。一个追一个逃，距离越来越远。`;
     }
     if ((bEmotion === "被忽视" || bEmotion === "不被重视") && aEmotion === "愤怒") {
-      return `「追逃模式」形成：B 觉得「${bTrigger}」感到被忽视，想要靠近和沟通；A 感受到压力和指责，用「${aTrigger}」表达愤怒和推开。一个追一个逃，距离越来越远。`;
+      return `「追逃模式」形成：${chainB.name} 觉得 ${displayBTrigger} 感到被忽视，想要靠近和沟通；${chainA.name} 感受到压力和指责，用 ${displayATrigger} 表达愤怒和推开。一个追一个逃，距离越来越远。`;
     }
     if (aEmotion === "被误解" && bEmotion === "被误解") {
       return `「鸡同鸭讲」循环：双方都觉得自己不被理解，都在努力解释自己，但没有人在听对方说什么。每一次解释都被对方当成辩解。`;
     }
 
-    return `双方形成相互触发的循环：A 的「${aTrigger}」触发了 B 的「${bEmotion}」，B 的「${bTrigger}」又反过来触发 A 的「${aEmotion}」。每一轮对话都在强化对方的负面感受。`;
+    return `双方形成相互触发的循环：${chainA.name} 的 ${displayATrigger} 触发了 ${chainB.name} 的 ${displayBEmotion}，${chainB.name} 的 ${displayBTrigger} 又反过来触发 ${chainA.name} 的 ${displayAEmotion}。每一轮对话都在强化对方的负面感受。`;
   }
 
   private generateAlternativeInterpretation(input: RelationshipInput): string {
@@ -499,15 +528,39 @@ export class RelationshipAnalyzer {
     chainB: ParticipantTriggerChain,
     escalationPath: EscalationStep[]
   ): string {
+    const hasASpoken = chainA.chain.length > 0;
+    const hasBSpoken = chainB.chain.length > 0;
     const totalEscalation = escalationPath.reduce((sum, s) => sum + Math.max(0, s.intensityChange), 0);
     const aBugs = chainA.coreBugs.map((b) => b.bug.name).join("、");
     const bBugs = chainB.coreBugs.map((b) => b.bug.name).join("、");
 
     let insight = `这不是谁对谁错的问题，而是两个认知系统在互动过程中产生的「系统级 Bug」。\n\n`;
-    insight += `${chainA.name} 的认知系统被「${chainA.primaryTrigger}」触发，启动了${aBugs ? `「${aBugs}」模式，` : ""}产生了强烈的「${chainA.dominantEmotion}」；\n\n`;
-    insight += `与此同时，${chainB.name} 的认知系统被「${chainB.primaryTrigger}」触发，启动了${bBugs ? `「${bBugs}」模式，` : ""}也产生了强烈的「${chainB.dominantEmotion}」。\n\n`;
 
-    if (totalEscalation > 5) {
+    if (hasASpoken) {
+      const aTriggerText =
+        chainA.primaryTrigger && chainA.primaryTrigger !== "无明显触发点"
+          ? `被「${chainA.primaryTrigger}」触发`
+          : "被某些信号触发";
+      const aEmotionText =
+        chainA.dominantEmotion && chainA.dominantEmotion !== "平静"
+          ? `产生了「${chainA.dominantEmotion}」的情绪`
+          : "产生了情绪反应";
+      insight += `${chainA.name} 的认知系统${aTriggerText}，启动了${aBugs ? `「${aBugs}」模式，` : "某种认知保护模式，"}${aEmotionText}；\n\n`;
+    }
+
+    if (hasBSpoken) {
+      const bTriggerText =
+        chainB.primaryTrigger && chainB.primaryTrigger !== "无明显触发点"
+          ? `被「${chainB.primaryTrigger}」触发`
+          : "被某些信号触发";
+      const bEmotionText =
+        chainB.dominantEmotion && chainB.dominantEmotion !== "平静"
+          ? `产生了「${chainB.dominantEmotion}」的情绪`
+          : "产生了情绪反应";
+      insight += `与此同时，${chainB.name} 的认知系统${bTriggerText}，启动了${bBugs ? `「${bBugs}」模式，` : "某种认知保护模式，"}${bEmotionText}。\n\n`;
+    }
+
+    if (totalEscalation > 5 && escalationPath.length > 0) {
       insight += `在 ${escalationPath.length} 轮互动中，情绪强度持续上升，形成了正反馈循环。双方都觉得是对方先攻击自己，都觉得自己是受害者。\n\n`;
     }
 
