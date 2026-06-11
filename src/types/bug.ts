@@ -26,6 +26,12 @@ export interface RealCase {
   consequence?: string;
 }
 
+export interface BugPropagation {
+  targetId: string;
+  reason: string;
+  strength: number;
+}
+
 export interface CognitiveBug {
   id: string;
   name: string;
@@ -47,6 +53,48 @@ export interface CognitiveBug {
   icon?: string;
   version?: string;
   tags?: string[];
+  triggers?: BugPropagation[];
+  triggeredBy?: string[];
+}
+
+export type EdgeType = "matched" | "potential";
+
+export type SpiralSeverity = "mild" | "moderate" | "severe";
+
+export interface ChainNode {
+  bugId: string;
+  bug: CognitiveBug;
+  matchScore: number;
+  isTrigger: boolean;
+  level: number;
+  isMatched: boolean;
+  propagationStrength: number;
+}
+
+export interface ChainEdge {
+  from: string;
+  to: string;
+  reason: string;
+  strength: number;
+  type: EdgeType;
+}
+
+export interface PropagationPath {
+  bugIds: string[];
+  nodes: ChainNode[];
+  edges: ChainEdge[];
+  totalStrength: number;
+}
+
+export interface BugChain {
+  nodes: ChainNode[];
+  edges: ChainEdge[];
+  triggerBugId: string;
+  chainLength: number;
+  potentialCount: number;
+  explanation: string;
+  dominantPath: PropagationPath | null;
+  spiralSeverity: SpiralSeverity;
 }
 
 export interface BugMatchResult {

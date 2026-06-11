@@ -4,12 +4,12 @@ import {
   RefreshCw,
   SearchX,
   Sparkles,
-  AlertTriangle,
   Info,
   ClipboardPaste,
 } from "lucide-react";
 import { MuseumHeader } from "../components/MuseumHeader";
 import { ExhibitHall } from "../components/ExhibitHall";
+import { ChainViewer } from "../components/ChainViewer";
 import { useAppStore } from "../store/useAppStore";
 import { cn } from "../lib/utils";
 
@@ -18,6 +18,7 @@ export default function ResultPage() {
   const {
     userInput,
     matchResults,
+    bugChain,
     isLoading,
     expandedBugId,
     toggleBugExpansion,
@@ -94,6 +95,12 @@ export default function ResultPage() {
             <NotScannedState onBack={handleBack} />
           ) : hasResults ? (
             <>
+              {bugChain && (
+                <div className="mb-10">
+                  <ChainViewer chain={bugChain} />
+                </div>
+              )}
+
               <ExhibitHall
                 results={matchResults}
                 expandedBugId={expandedBugId}

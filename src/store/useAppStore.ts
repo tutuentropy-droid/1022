@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import bugsData from "../data/bugs.json";
-import type { BugMatchResult, CognitiveBug } from "../types/bug";
+import type { BugMatchResult, CognitiveBug, BugChain } from "../types/bug";
 import { createBugMatcher } from "../services/bugMatcher";
+import { buildBugChain } from "../services/chainBuilder";
 
 const STORAGE_KEY = "cognitive-bug-museum-state";
 
@@ -47,6 +48,7 @@ interface AppState {
   allBugs: CognitiveBug[];
   userInput: string;
   matchResults: BugMatchResult[];
+  bugChain: BugChain | null;
   isLoading: boolean;
   expandedBugId: string | null;
   matcherType: "keyword" | "ai";
@@ -66,6 +68,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   allBugs: bugsData as CognitiveBug[],
   userInput: persisted?.userInput ?? "",
   matchResults: persisted?.matchResults ?? [],
+  bugChain: null,
   isLoading: false,
   expandedBugId: null,
   matcherType: "keyword",
@@ -83,19 +86,20 @@ export const useAppStore = create<AppState>((set, get) => ({
     const { userInput, allBugs, matcherType } = get();
     if (!userInput.trim()) return;
 
-    set({ isLoading: true, matchResults: [], expandedBugId: null, hasScanned: true });
+    set({ isLoading: true, matchResults: [], bugChain: null, expandedBugId: null, hasScanned: true });
 
     try {
       const matcher = createBugMatcher(matcherType);
       const results = await matcher.match(userInput, allBugs);
-      set({ matchResults: results });
+      const chain = buildBugChain(results, allBugs);
+      set({ matchResults: results, bugChain: chain });
       persistState({
         userInput,
         matchResults: results,
       });
     } catch (error) {
       console.error("Analysis failed:", error);
-      set({ matchResults: [] });
+      set({ matchResults: [], bugChain: null });
       persistState({
         userInput,
         matchResults: [],
@@ -115,6 +119,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   clearResults: () => {
     set({
       matchResults: [],
+      bugChain: null,
       userInput: "",
       expandedBugId: null,
       hasScanned: false,

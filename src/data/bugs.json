@@ -85,7 +85,45 @@
     "museumNumber": "CB-001",
     "icon": "Scale",
     "version": "2.0",
-    "tags": ["社交", "焦虑", "自我否定"]
+    "tags": ["社交", "焦虑", "自我否定"],
+    "triggers": [
+      {
+        "targetId": "one-fail-equals-all",
+        "reason": "比较中发现自己'不如人'，容易给自己贴上'失败者'的标签",
+        "strength": 0.85
+      },
+      {
+        "targetId": "one-flop-all-flop",
+        "reason": "看到别人都很好，容易以偏概全地觉得自己什么都不行",
+        "strength": 0.75
+      },
+      {
+        "targetId": "good-things-discount",
+        "reason": "总盯着别人的优点，自然会贬低自己的成就",
+        "strength": 0.7
+      },
+      {
+        "targetId": "should-tyrant",
+        "reason": "看到别人的'成功标准'，变成对自己的'应该'",
+        "strength": 0.75
+      },
+      {
+        "targetId": "negative-pixel-lock",
+        "reason": "比较心态让注意力聚焦在自己的不足上",
+        "strength": 0.8
+      },
+      {
+        "targetId": "feeling-is-fact",
+        "reason": "比较带来的低落情绪被当成'我真的很差'的证据",
+        "strength": 0.65
+      },
+      {
+        "targetId": "procrastination-paralysis",
+        "reason": "觉得别人都比自己强，自己再努力也没用，干脆放弃",
+        "strength": 0.75
+      }
+    ],
+    "triggeredBy": ["mind-reading-fanfiction", "should-tyrant", "procrastination-paralysis"]
   },
   {
     "id": "doomsday-rehearsal",
@@ -172,7 +210,45 @@
     "museumNumber": "CB-002",
     "icon": "Flame",
     "version": "2.0",
-    "tags": ["焦虑", "预测", "恐惧"]
+    "tags": ["焦虑", "预测", "恐惧"],
+    "triggers": [
+      {
+        "targetId": "prophet-self-fulfill",
+        "reason": "相信灾难会发生，行为就会倾向于让它真的发生",
+        "strength": 0.8
+      },
+      {
+        "targetId": "feeling-is-fact",
+        "reason": "灾难化思维带来的强烈恐惧被当成'真的有危险'的证据",
+        "strength": 0.75
+      },
+      {
+        "targetId": "one-fail-equals-all",
+        "reason": "一次小失误被灾难化后，容易给自己贴负面标签",
+        "strength": 0.7
+      },
+      {
+        "targetId": "universe-scapegoat",
+        "reason": "坏事发生时，灾难化思维容易让人觉得都是自己的错",
+        "strength": 0.6
+      },
+      {
+        "targetId": "procrastination-paralysis",
+        "reason": "想到可怕的后果就想逃避，拖延成了暂时的避难所",
+        "strength": 0.85
+      }
+    ],
+    "triggeredBy": [
+      "one-fail-equals-all",
+      "binary-life",
+      "one-flop-all-flop",
+      "feeling-is-fact",
+      "negative-pixel-lock",
+      "mind-reading-fanfiction",
+      "universe-scapegoat",
+      "should-tyrant",
+      "procrastination-paralysis"
+    ]
   },
   {
     "id": "one-fail-equals-all",
@@ -259,7 +335,51 @@
     "museumNumber": "CB-003",
     "icon": "Tag",
     "version": "2.0",
-    "tags": ["自我否定", "评价", "标签"]
+    "tags": ["自我否定", "评价", "标签"],
+    "triggers": [
+      {
+        "targetId": "doomsday-rehearsal",
+        "reason": "认定自己是'失败者'后，自然会预测未来会一直失败",
+        "strength": 0.85
+      },
+      {
+        "targetId": "prophet-self-fulfill",
+        "reason": "给自己贴上'不行'的标签后，行为会不自觉地配合这个标签",
+        "strength": 0.8
+      },
+      {
+        "targetId": "good-things-discount",
+        "reason": "自我否定的人会自动否定任何正面的事情",
+        "strength": 0.75
+      },
+      {
+        "targetId": "feeling-is-fact",
+        "reason": "自我标签带来的低落情绪被当成'我就是这样的人'的证据",
+        "strength": 0.7
+      },
+      {
+        "targetId": "universe-scapegoat",
+        "reason": "觉得自己'什么都不行'的人，容易把所有坏事都归罪于自己",
+        "strength": 0.65
+      },
+      {
+        "targetId": "procrastination-paralysis",
+        "reason": "觉得自己反正做不好，干脆就不开始了",
+        "strength": 0.9
+      }
+    ],
+    "triggeredBy": [
+      "comparison-hell",
+      "binary-life",
+      "one-flop-all-flop",
+      "doomsday-rehearsal",
+      "feeling-is-fact",
+      "good-things-discount",
+      "negative-pixel-lock",
+      "universe-scapegoat",
+      "should-tyrant",
+      "procrastination-paralysis"
+    ]
   },
   {
     "id": "binary-life",
@@ -346,7 +466,35 @@
     "museumNumber": "CB-004",
     "icon": "Contrast",
     "version": "2.0",
-    "tags": ["完美主义", "极端思维", "评价"]
+    "tags": ["完美主义", "极端思维", "评价"],
+    "triggers": [
+      {
+        "targetId": "one-fail-equals-all",
+        "reason": "非黑即白的思维方式，自然会用一个行为定义整个人",
+        "strength": 0.9
+      },
+      {
+        "targetId": "doomsday-rehearsal",
+        "reason": "没有达到完美就等于彻底失败，自然会灾难化",
+        "strength": 0.8
+      },
+      {
+        "targetId": "should-tyrant",
+        "reason": "二进制思维容易产生'必须完美'的绝对化规则",
+        "strength": 0.75
+      },
+      {
+        "targetId": "negative-pixel-lock",
+        "reason": "完美主义者的注意力天然会被瑕疵吸引",
+        "strength": 0.85
+      },
+      {
+        "targetId": "procrastination-paralysis",
+        "reason": "做不到100分干脆不做，完美主义的另一种表现就是拖延",
+        "strength": 0.85
+      }
+    ],
+    "triggeredBy": ["should-tyrant", "good-things-discount", "procrastination-paralysis"]
   },
   {
     "id": "one-flop-all-flop",
@@ -433,7 +581,35 @@
     "museumNumber": "CB-005",
     "icon": "Layers",
     "version": "2.0",
-    "tags": ["概括", "偏见", "外推"]
+    "tags": ["概括", "偏见", "外推"],
+    "triggers": [
+      {
+        "targetId": "one-fail-equals-all",
+        "reason": "以偏概全的思维方式，容易从一件事推导出对整个人的评价",
+        "strength": 0.8
+      },
+      {
+        "targetId": "doomsday-rehearsal",
+        "reason": "一次失败就等于'永远都这样'，自然会灾难化未来",
+        "strength": 0.75
+      },
+      {
+        "targetId": "prophet-self-fulfill",
+        "reason": "相信'永远都这样'，行为就会放弃努力，最终真的变成这样",
+        "strength": 0.7
+      },
+      {
+        "targetId": "good-things-discount",
+        "reason": "过度概括负面经验的人，也倾向于否定正面经验",
+        "strength": 0.6
+      },
+      {
+        "targetId": "procrastination-paralysis",
+        "reason": "觉得自己永远都做不好，试都不用试了",
+        "strength": 0.82
+      }
+    ],
+    "triggeredBy": ["negative-pixel-lock", "comparison-hell", "mind-reading-fanfiction", "procrastination-paralysis"]
   },
   {
     "id": "mind-reading-fanfiction",
@@ -521,7 +697,40 @@
     "museumNumber": "CB-006",
     "icon": "Eye",
     "version": "2.0",
-    "tags": ["社交", "猜测", "臆断"]
+    "tags": ["社交", "猜测", "臆断"],
+    "triggers": [
+      {
+        "targetId": "one-fail-equals-all",
+        "reason": "脑补别人看不起自己，容易给自己贴上'不讨人喜欢'的标签",
+        "strength": 0.7
+      },
+      {
+        "targetId": "doomsday-rehearsal",
+        "reason": "觉得别人对自己有负面看法，容易灾难化人际关系的未来",
+        "strength": 0.75
+      },
+      {
+        "targetId": "comparison-hell",
+        "reason": "觉得别人都比自己好、都看不起自己，容易陷入比较",
+        "strength": 0.65
+      },
+      {
+        "targetId": "universe-scapegoat",
+        "reason": "觉得别人的负面情绪都是自己造成的",
+        "strength": 0.7
+      },
+      {
+        "targetId": "one-flop-all-flop",
+        "reason": "一次被'看不起'的经历，容易概括成'所有人都看不起我'",
+        "strength": 0.6
+      },
+      {
+        "targetId": "procrastination-paralysis",
+        "reason": "害怕别人的评价，干脆逃避不做就不会被评判",
+        "strength": 0.78
+      }
+    ],
+    "triggeredBy": ["should-tyrant", "universe-scapegoat", "feeling-is-fact", "procrastination-paralysis"]
   },
   {
     "id": "prophet-self-fulfill",
@@ -608,7 +817,30 @@
     "museumNumber": "CB-007",
     "icon": "Sparkles",
     "version": "2.0",
-    "tags": ["预测", "焦虑", "自我实现"]
+    "tags": ["预测", "焦虑", "自我实现"],
+    "triggers": [
+      {
+        "targetId": "doomsday-rehearsal",
+        "reason": "预测失败容易演变成灾难化的想象",
+        "strength": 0.85
+      },
+      {
+        "targetId": "one-fail-equals-all",
+        "reason": "自证预言失败后，容易给自己贴上永久的负面标签",
+        "strength": 0.7
+      },
+      {
+        "targetId": "good-things-discount",
+        "reason": "消极预测的人倾向于否定任何积极的可能性",
+        "strength": 0.6
+      },
+      {
+        "targetId": "procrastination-paralysis",
+        "reason": "预测自己会失败，干脆不努力了，反而'印证'了预测",
+        "strength": 0.88
+      }
+    ],
+    "triggeredBy": ["doomsday-rehearsal", "one-fail-equals-all", "should-tyrant", "feeling-is-fact", "procrastination-paralysis"]
   },
   {
     "id": "universe-scapegoat",
@@ -695,7 +927,40 @@
     "museumNumber": "CB-008",
     "icon": "User",
     "version": "2.0",
-    "tags": ["自责", "归因", "内疚"]
+    "tags": ["自责", "归因", "内疚"],
+    "triggers": [
+      {
+        "targetId": "one-fail-equals-all",
+        "reason": "把所有错都揽到自己身上，自然会觉得自己是个糟糕的人",
+        "strength": 0.85
+      },
+      {
+        "targetId": "doomsday-rehearsal",
+        "reason": "觉得都是自己的错，容易灾难化地想象后果有多严重",
+        "strength": 0.75
+      },
+      {
+        "targetId": "feeling-is-fact",
+        "reason": "强烈的内疚感被当成'我真的做错了'的证据",
+        "strength": 0.7
+      },
+      {
+        "targetId": "should-tyrant",
+        "reason": "自我归因的人通常对自己有很高的'应该'标准",
+        "strength": 0.65
+      },
+      {
+        "targetId": "mind-reading-fanfiction",
+        "reason": "觉得自己做错了，容易脑补别人怎么看自己",
+        "strength": 0.7
+      },
+      {
+        "targetId": "procrastination-paralysis",
+        "reason": "害怕自己又搞砸、又要背锅，干脆不做就不会错",
+        "strength": 0.8
+      }
+    ],
+    "triggeredBy": ["doomsday-rehearsal", "one-fail-equals-all", "should-tyrant", "mind-reading-fanfiction", "procrastination-paralysis"]
   },
   {
     "id": "should-tyrant",
@@ -782,7 +1047,50 @@
     "museumNumber": "CB-009",
     "icon": "ScrollText",
     "version": "2.0",
-    "tags": ["规则", "强迫", "期待"]
+    "tags": ["规则", "强迫", "期待"],
+    "triggers": [
+      {
+        "targetId": "one-fail-equals-all",
+        "reason": "没达到'应该'的标准，容易给自己贴上'失败者'的标签",
+        "strength": 0.85
+      },
+      {
+        "targetId": "doomsday-rehearsal",
+        "reason": "打破'应该'的规则，容易灾难化后果",
+        "strength": 0.75
+      },
+      {
+        "targetId": "universe-scapegoat",
+        "reason": "'应该'标准没达到，容易归罪于自己",
+        "strength": 0.8
+      },
+      {
+        "targetId": "comparison-hell",
+        "reason": "社会'应该'的标准，往往来自和他人的比较",
+        "strength": 0.7
+      },
+      {
+        "targetId": "binary-life",
+        "reason": "'应该'思维往往是非黑即白的",
+        "strength": 0.75
+      },
+      {
+        "targetId": "mind-reading-fanfiction",
+        "reason": "觉得别人'应该'怎样，容易脑补别人的想法",
+        "strength": 0.65
+      },
+      {
+        "targetId": "prophet-self-fulfill",
+        "reason": "'应该'做不到，就预测自己会失败",
+        "strength": 0.7
+      },
+      {
+        "targetId": "procrastination-paralysis",
+        "reason": "太多'应该'压得人喘不过气，干脆逃避来缓解焦虑",
+        "strength": 0.82
+      }
+    ],
+    "triggeredBy": ["comparison-hell", "binary-life", "universe-scapegoat", "procrastination-paralysis"]
   },
   {
     "id": "feeling-is-fact",
@@ -869,7 +1177,47 @@
     "museumNumber": "CB-010",
     "icon": "Heart",
     "version": "2.0",
-    "tags": ["情绪", "推理", "焦虑"]
+    "tags": ["情绪", "推理", "焦虑"],
+    "triggers": [
+      {
+        "targetId": "doomsday-rehearsal",
+        "reason": "强烈的焦虑感被当成'真的有危险'，自然会灾难化",
+        "strength": 0.9
+      },
+      {
+        "targetId": "one-fail-equals-all",
+        "reason": "糟糕的感受被当成'我就是个糟糕的人'",
+        "strength": 0.8
+      },
+      {
+        "targetId": "mind-reading-fanfiction",
+        "reason": "情绪不安时，更容易脑补别人的负面想法",
+        "strength": 0.7
+      },
+      {
+        "targetId": "universe-scapegoat",
+        "reason": "内疚感被当成'我真的做错了'的证据",
+        "strength": 0.75
+      },
+      {
+        "targetId": "prophet-self-fulfill",
+        "reason": "糟糕的感受让人预测未来也会很糟糕",
+        "strength": 0.75
+      },
+      {
+        "targetId": "procrastination-paralysis",
+        "reason": "心情不好就什么都不想做，情绪驱动的行为逃避",
+        "strength": 0.8
+      }
+    ],
+    "triggeredBy": [
+      "doomsday-rehearsal",
+      "one-fail-equals-all",
+      "comparison-hell",
+      "universe-scapegoat",
+      "negative-pixel-lock",
+      "procrastination-paralysis"
+    ]
   },
   {
     "id": "good-things-discount",
@@ -956,7 +1304,41 @@
     "museumNumber": "CB-011",
     "icon": "ThumbsDown",
     "version": "2.0",
-    "tags": ["自尊", "否定", "低价值感"]
+    "tags": ["自尊", "否定", "低价值感"],
+    "triggers": [
+      {
+        "targetId": "one-fail-equals-all",
+        "reason": "否定自己的优点，自然会觉得自己整体都不行",
+        "strength": 0.8
+      },
+      {
+        "targetId": "binary-life",
+        "reason": "好事不算数，等于只有坏事算数，非黑即白",
+        "strength": 0.7
+      },
+      {
+        "targetId": "doomsday-rehearsal",
+        "reason": "低价值感让人更容易预测糟糕的未来",
+        "strength": 0.65
+      },
+      {
+        "targetId": "comparison-hell",
+        "reason": "觉得自己不够好的人，更容易陷入和别人的比较",
+        "strength": 0.7
+      },
+      {
+        "targetId": "procrastination-paralysis",
+        "reason": "觉得做了也不算数、努力也没用，自然就不想做了",
+        "strength": 0.78
+      }
+    ],
+    "triggeredBy": [
+      "one-fail-equals-all",
+      "comparison-hell",
+      "negative-pixel-lock",
+      "should-tyrant",
+      "procrastination-paralysis"
+    ]
   },
   {
     "id": "negative-pixel-lock",
@@ -1043,6 +1425,171 @@
     "museumNumber": "CB-012",
     "icon": "Filter",
     "version": "2.0",
-    "tags": ["注意", "选择", "消极"]
+    "tags": ["注意", "选择", "消极"],
+    "triggers": [
+      {
+        "targetId": "one-fail-equals-all",
+        "reason": "只盯着负面细节，容易用局部否定整体",
+        "strength": 0.85
+      },
+      {
+        "targetId": "doomsday-rehearsal",
+        "reason": "只看负面，自然会觉得未来很糟糕",
+        "strength": 0.8
+      },
+      {
+        "targetId": "one-flop-all-flop",
+        "reason": "盯着一个坏像素，容易概括成'全部都不好'",
+        "strength": 0.75
+      },
+      {
+        "targetId": "good-things-discount",
+        "reason": "注意力都在负面，正面的自然被忽略和否定",
+        "strength": 0.9
+      },
+      {
+        "targetId": "feeling-is-fact",
+        "reason": "只看负面信息带来的糟糕情绪，被当成了事实",
+        "strength": 0.7
+      },
+      {
+        "targetId": "comparison-hell",
+        "reason": "只盯着自己的缺点和别人的优点，自然会比较",
+        "strength": 0.75
+      },
+      {
+        "targetId": "procrastination-paralysis",
+        "reason": "只看到困难和问题，觉得做了也做不好，干脆不开始",
+        "strength": 0.8
+      }
+    ],
+    "triggeredBy": ["binary-life", "comparison-hell", "should-tyrant", "procrastination-paralysis"]
+  },
+  {
+    "id": "procrastination-paralysis",
+    "name": "拖延瘫痪",
+    "tagline": "明天做的事，永远在明天",
+    "scientificName": "Procrastination / 拖延症",
+    "alias": ["明日复明日", "任务逃避", "启动困难症", "拖延癌"],
+    "category": "behavioral",
+    "severity": "medium",
+    "rank": "A",
+    "recurrenceRate": 95,
+    "description": "明知道该做的事却迟迟不行动，用各种方式逃避，直到最后期限逼近才手忙脚乱，或者干脆放弃——不是懒，而是被各种认知 Bug 联手困在了原地。",
+    "commonPhrases": [
+      "明天再做吧，今天没状态",
+      "等我准备好了再开始",
+      "反正也做不好，不如不做",
+      "还有时间，不急",
+      "一想到要做这件事就头疼",
+      "我就是个拖延症晚期，没救了"
+    ],
+    "triggerConditions": [
+      {
+        "scenario": "面对重要但困难的任务",
+        "description": "任务难度大、结果不确定，容易产生逃避心理"
+      },
+      {
+        "scenario": "完美主义发作",
+        "description": "觉得要做就必须做到最好，不然干脆不做"
+      },
+      {
+        "scenario": "情绪低落时",
+        "description": "心情不好、能量低的时候，什么都不想做"
+      },
+      {
+        "scenario": "任务太多感到 overwhelm",
+        "description": "待办事项堆积如山，不知道从哪里开始"
+      }
+    ],
+    "reasoningPath": [
+      {
+        "step": 1,
+        "thought": "我有一件重要的事要做",
+        "cognitiveLeap": "默认这件事一定很痛苦、很难做好"
+      },
+      {
+        "step": 2,
+        "thought": "万一做不好怎么办/我还没准备好",
+        "cognitiveLeap": "灾难化思维+完美主义联手，把开始的门槛抬得很高"
+      },
+      {
+        "step": 3,
+        "thought": "先做点别的吧，等会儿再做",
+        "cognitiveLeap": "选择即时的情绪缓解，逃避当下的焦虑"
+      },
+      {
+        "step": 4,
+        "thought": "完了，又拖延了，我真是没救了",
+        "cognitiveLeap": "拖延之后的自我否定，反而让下一次更难开始"
+      }
+    ],
+    "realCases": [
+      {
+        "title": "一篇论文拖了三个月",
+        "context": "小李研究生毕业论文，还有三个月截止，题目和数据都有了。",
+        "bugManifestation": "他每天都想着'今天要写论文'，但一坐在电脑前就开始刷手机、整理桌面、查资料（假装在准备），就是不开始写。每天结束都很自责，觉得自己太懒了。直到最后两周才熬夜赶完，质量大打折扣，还差点延毕。"
+      },
+      {
+        "title": "一条消息拖了三天",
+        "context": "小王收到一个重要工作邮件，需要认真回复。",
+        "bugManifestation": "他看到邮件的第一反应是'这得好好想想怎么回'，然后就放一边了。之后每次想到这件事就有点焦虑，然后又去做别的事逃避。三天后才回复，对方已经等不及找了别人，他在领导面前留下了不靠谱的印象。"
+      }
+    ],
+    "coping": [
+      "五分钟启动法：告诉自己'只做五分钟就好'——通常开始了就会继续做下去",
+      "把任务拆成最小的一步——不是'写报告'，而是'打开文档写标题'",
+      "接受'足够好'就好，不追求完美——完成比完美重要",
+      "用番茄钟：25分钟专注 + 5分钟休息，降低启动的心理门槛",
+      "问问自己：你在逃避什么？是害怕失败、还是觉得这件事没有意义？找到真正的原因"
+    ],
+    "keywords": [
+      "明天再做", "等一下", "待会儿", "回头再说",
+      "不想做", "没心情", "没状态", "提不起劲",
+      "拖延", "懒得", "不想动", "等准备好了",
+      "还有时间", "不急", "反正也做不好",
+      "一想到就头疼", "压力好大", "不想面对"
+    ],
+    "museumNumber": "CB-013",
+    "icon": "Clock",
+    "version": "2.0",
+    "tags": ["行为", "逃避", "启动困难"],
+    "triggers": [
+      {
+        "targetId": "one-fail-equals-all",
+        "reason": "拖延之后的自责，容易给自己贴上'懒惰''没用'的标签",
+        "strength": 0.9
+      },
+      {
+        "targetId": "doomsday-rehearsal",
+        "reason": "拖延积累的压力，容易让人灾难化想象后果有多严重",
+        "strength": 0.85
+      },
+      {
+        "targetId": "universe-scapegoat",
+        "reason": "拖延的人容易把所有问题都归罪于自己'不够自律'",
+        "strength": 0.75
+      },
+      {
+        "targetId": "should-tyrant",
+        "reason": "拖延之后会冒出更多'我应该''我必须'的自我谴责",
+        "strength": 0.8
+      },
+      {
+        "targetId": "feeling-is-fact",
+        "reason": "拖延带来的糟糕感受，被当成'我真的很差'的证据",
+        "strength": 0.7
+      }
+    ],
+    "triggeredBy": [
+      "doomsday-rehearsal",
+      "one-fail-equals-all",
+      "prophet-self-fulfill",
+      "should-tyrant",
+      "binary-life",
+      "feeling-is-fact",
+      "good-things-discount",
+      "universe-scapegoat"
+    ]
   }
 ]
